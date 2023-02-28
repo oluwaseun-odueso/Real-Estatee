@@ -6,7 +6,7 @@
   "scripts": {
     "start": "npm install && npm run build && node dist/app.js",
     "dev": "node src/app.ts",
-    "build": "tsc -w"
+    "build": "tsc -p ."
   },
   "author": "Oluwaseun Odueso",
   "license": "ISC",
