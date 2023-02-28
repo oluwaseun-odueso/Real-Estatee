@@ -1,11 +1,7 @@
-import { CustomSeller } from "../custom";
-
-// export {};
-
-declare global {
-    declare namespace Express {
-        export interface Request {
-            seller?: CustomSeller | undefined
-        }
-    }
+// declare global {
+declare namespace Express {
+  export interface Request {
+    seller?: CustomSeller | jwt.JwtPayload;
+  }
 }
+// }
