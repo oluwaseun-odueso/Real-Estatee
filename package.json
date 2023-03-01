@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node dist/app.js",
+    "start": "node dist/src/app.js",
     "postinstall": "tsc",
     "compile": "npm install && npm run build && node src/app.ts",
     "dev": "node src/app.ts",
