@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "compile": "npm install && node dist/src/app.js",
-    "start": "npm install && npm run build && node src/app.ts",
+    "start": "node dist/app.js",
+    "postinstall": "tsc",
+    "compile": "npm install && npm run build && node src/app.ts",
     "dev": "node src/app.ts",
     "build": "tsc -p ."
   },
@@ -36,5 +37,8 @@
     "sequelize": "^6.28.1",
     "ts-node": "^10.9.1",
     "util": "^0.12.5"
+  },
+  "engines": {
+    "node": "16.13.2"
   }
 }
