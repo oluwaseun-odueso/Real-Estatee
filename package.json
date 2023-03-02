@@ -6,8 +6,8 @@
   "scripts": {
     "start": "node dist/src/app.js",
     "postinstall": "tsc",
-    "build": "nodemon dist/src/app.js",
-    "dev": "nodemon src/app.ts",
+    "build": "node dist/src/app.js",
+    "dev": "node src/app.ts",
     "compile": "tsc -w "
   },
   "author": "Oluwaseun Odueso",
