@@ -10,14 +10,14 @@ const s3 = new AWS.S3({
 
 export const upload = multer({
   storage: multerS3({
-    s3,
+    s3: s3,
     bucket: S3_BUCKET_NAME,
     acl: "public-read",
     contentType: multerS3.AUTO_CONTENT_TYPE,
-    // metadata: function (req: Request, file: any, cb: (arg0: null, arg1: { fieldName: any; }) => void) {
-    //   cb(null, { fieldName: file.fieldname });
-    // },
-    key: function (req: Request, file: any, cb: (arg0: null, arg1: string) => void) {
+    metadata: function (req: any, file: { fieldname: any; }, cb: (arg0: null, arg1: { fieldName: any; }) => void) {
+      cb(null, { fieldName: file.fieldname });
+    },
+    key: function (req: any, file: { originalname: string; }, cb: (arg0: null, arg1: string) => void) {
       cb(null, file.originalname);
     },
   }),
