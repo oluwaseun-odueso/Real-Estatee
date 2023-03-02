@@ -5,10 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node dist/src/app.js",
-    "postinstall": "tsc",
-    "build": "node dist/src/app.js",
-    "dev": "node src/app.ts",
-    "compile": "tsc -w "
+    "postinstall": "tsc"
   },
   "author": "Oluwaseun Odueso",
   "license": "ISC",
