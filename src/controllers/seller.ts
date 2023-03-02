@@ -27,7 +27,7 @@ const unlinkFile = util.promisify(fs.unlink)
 
 export async function signUpSeller (req: Request, res: Response) {
     try {
-        if (!req.body.first_name || !req.body.last_name || !req.body.email || !req.body.phone_number || !req.body.street || !req.body.state || !req.body.country || !req.body.password) {
+        if (!req.body.first_name || !req.body.last_name || !req.body.email || !req.body.phone_number || !req.body.street || !req.body.password) {
             res.status(400).json({ 
                 success: false, 
                 message: "Please enter all required fields"
@@ -105,7 +105,7 @@ export async function loginSeller (req: Request, res: Response) {
 
 export async function updateSellerAccount(req: Request, res: Response) {
     try {
-        if (!req.body.first_name || !req.body.last_name || !req.body.email || !req.body.phone_number || !req.body.street || !req.body.state || !req.body.country) {
+        if (!req.body.first_name || !req.body.last_name || !req.body.email || !req.body.phone_number || !req.body.street) {
             res.status(400).json({ 
                 success: false, 
                 message: "Please enter all required fields"

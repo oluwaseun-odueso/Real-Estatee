@@ -20,6 +20,6 @@ router.post('/login', loginSeller);
 router.put('/update_account', verifySellerToken, updateSellerAccount);
 router.get('/get_account', verifySellerToken, getSellerAccount);
 router.delete('/delete_account', verifySellerToken, deleteAccount);
-router.post('/upload_image', verifySellerToken,  upload.single('image'), uploadSellerImage);
+router.post('/upload-image', verifySellerToken,  upload.single('image'), uploadSellerImage);
 
 export default router;
