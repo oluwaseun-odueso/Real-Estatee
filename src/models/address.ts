@@ -14,11 +14,9 @@ Address.init({
     },
     state: {
       type: DataTypes.STRING,
-      allowNull: false
     },
     country: {
       type: DataTypes.STRING,
-      allowNull: false
     },
     postal_code : {
       type: DataTypes.NUMBER
