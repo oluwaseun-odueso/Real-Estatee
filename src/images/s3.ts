@@ -1,5 +1,5 @@
 require('dotenv').config()
-const fs = require('fs')
+import fs from 'fs'
 const S3 = require('aws-sdk/clients/s3')
 
 const bucketName = process.env.AWS_BUCKET_NAME

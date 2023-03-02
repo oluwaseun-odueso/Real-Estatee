@@ -206,7 +206,7 @@ export async function uploadSellerImage (req: Request, res: Response) {
         const file: any = req.file
         const result = await uploadFile(file)
         await unlinkFile(file.path)
-        await saveSellerImageKey(req.seller.id, result.Key)
+        await saveSellerImageKey(req.seller.id, result.Location)
 
         res.status(200).send({
             success: true,

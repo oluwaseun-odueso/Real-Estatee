@@ -1,6 +1,8 @@
-import express, { Router } from 'express';
-import multer from 'multer';
+import express, { Router, Request, Response } from 'express';
 import { verifySellerToken } from '../auth/jwtAuth';
+// import {upload} from '../images2/uploads';
+
+import multer from 'multer';
 const upload = multer({ dest: 'uploads/ '})
 import { 
     deleteAccount,
