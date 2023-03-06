@@ -14,10 +14,11 @@ const s3 = new S3({
 });
 
 // uploads images to s3
-export function uploadFile(file: { path: any; filename: any }) {
-    const fileStream = fs.createReadStream(file.path)
+export function uploadFile(file: { path: any; filename: any; buffer: any }) {
+    const fileStream = fs.createReadStream(file.buffer)
     const uploadParams = {
         Bucket: bucketName,
+        acl: "public-read",
         Body: fileStream,
         Key: file.filename
     }
