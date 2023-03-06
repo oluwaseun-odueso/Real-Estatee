@@ -2,12 +2,19 @@ import express, { Application, Request, Response, NextFunction} from 'express';
 import sellerRoutes from './routes/seller';
 import propertyRoutes from './routes/property';
 import images from './images/controller';
+import cors from 'cors'
 require('dotenv').config();
 
 const PORT = process.env.PORT || 5000;
 const app: Application = express();
 
 app.use(express.json());
+app.use(
+    cors({
+        origin: "http://localhost:3000",
+        credentials: true
+    })
+)
 app.use('/seller', sellerRoutes);
 app.use('/property', propertyRoutes);
 app.use('/image', images)

@@ -204,7 +204,9 @@ export async function uploadSellerImage (req: Request, res: Response) {
         }
 
         const file: any = req.file
-        const result = await uploadFile(file)
+        console.log(file)
+        const result = await uploadFile(file.buffer)
+        console.log(result)
         await unlinkFile(file.path)
         await saveSellerImageKey(req.seller.id, result.Location)
 
