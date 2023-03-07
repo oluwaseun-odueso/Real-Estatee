@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "node dist/src/app.js",
-    "postinstall": "tsc"
+    "postinstall": "tsc",
+    "build": "nodemon dist/src/functions/propertyFunctions.js",
+    "dev": "nodemon src/app.ts"
   },
   "author": "Oluwaseun Odueso",
   "license": "ISC",

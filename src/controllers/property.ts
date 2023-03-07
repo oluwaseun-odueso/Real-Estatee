@@ -1,6 +1,6 @@
 import {Request, Response, NextFunction} from 'express';
 import { addAddress } from '../functions/addressFunctions';
-import { createProperty } from '../functions/propertyFunctions';
+import { createProperty, getFullPropertyDetails } from '../functions/propertyFunctions';
 
 export async function addProperty(req: Request, res: Response) {
     try {
@@ -18,6 +18,19 @@ export async function addProperty(req: Request, res: Response) {
         const seller_id = req.seller.id
         const property = await createProperty({seller_id, address_id, description, type, price})
         res.status(201).send({ success: true, message : "You have successfully put up a new property for sale", property})   
+    } catch (error: any) {
+        return res.status(500).json({
+            success: false,
+            message: 'Error adding property.',
+            error: error.message
+        });
+    };
+};
+
+export async function getProperty(req: Request, res: Response) {
+    try {
+        const property = await getFullPropertyDetails(req.seller.id, req.params.id)
+
     } catch (error: any) {
         return res.status(500).json({
             success: false,
