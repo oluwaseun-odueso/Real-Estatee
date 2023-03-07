@@ -40,10 +40,7 @@ export async function getPropertyById (id: number): Promise<CustomProperty> {
     } catch (error) {
         throw new Error(`Error getting property by id: ${error}`)
     }
-}
-// getPropertyById(1)
-//     .then(i => console.log(i))
-//     .catch(error => console.log(error))
+};
 
 export async function getFullPropertyDetails(property_id: number, property_address_id: number) {
     try {

@@ -1,6 +1,10 @@
 import {Request, Response, NextFunction} from 'express';
 import { addAddress } from '../functions/addressFunctions';
-import { createProperty, getFullPropertyDetails } from '../functions/propertyFunctions';
+import { 
+    createProperty, 
+    getFullPropertyDetails, 
+     getPropertyById 
+    } from '../functions/propertyFunctions';
 
 export async function addProperty(req: Request, res: Response) {
     try {
@@ -29,8 +33,21 @@ export async function addProperty(req: Request, res: Response) {
 
 export async function getProperty(req: Request, res: Response) {
     try {
-        const property = await getFullPropertyDetails(req.seller.id, req.params.id)
+        const propertyId = parseInt(req.params.id, 10)
+        const property = await getPropertyById(propertyId)
+        if (!property) {
+            res.status(400).send({
+                success: false,
+                message: "Property does not exist"
+            });
+            return;
+        };
 
+        const propertyDetails = await getFullPropertyDetails(propertyId, property.address_id)
+        res.status(200).send({ 
+            success: true,
+            propertyDetails
+        })
     } catch (error: any) {
         return res.status(500).json({
             success: false,
