@@ -1,6 +1,7 @@
 import {Property} from '../models/property';
 import {CustomProperty} from '../types/custom';
 import { getOnlyAddressDetails } from './addressFunctions';
+import { getFeaturesForProperty } from './propertyFeaturesFunctions';
 
 export type PropertyType = {
     seller_id: number,
@@ -46,8 +47,9 @@ export async function getFullPropertyDetails(property_id: number, property_addre
     try {
         const propertyDetails = await getPropertyById(property_id);
         const address_details = await getOnlyAddressDetails(property_address_id);
+        const features = await getFeaturesForProperty(property_id)
 
-        const propertyFullDetails = {...propertyDetails, address_details}
+        const propertyFullDetails = {...propertyDetails, address_details, features}
         return propertyFullDetails;
     } catch (error) {
         throw new Error(`Error getting seller full details: ${error}`)
