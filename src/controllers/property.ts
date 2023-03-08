@@ -95,5 +95,33 @@ export async function updateProperty(req: Request, res: Response) {
             message: 'Error updating property details.',
             error: error.message
         });
+    };
+};
+
+export async function deleteProperty(req: Request, res: Response) {
+    try {
+        const property_id = parseInt(req.params.id, 10)
+        const property = await getPropertyById(property_id)
+        if (!property) {
+            res.status(400).send({
+                success: false,
+                message: "Property does not exist"
+            });
+            return;
+        };
+
+        await deletePropertyAddress(property.address_id)
+        await deletePropertyFeatures(property_id)
+        await deleteSellerProperty(property_id, req.seller.id)
+        res.status(200).send({
+            success: true,
+            message: "Property has been deleted!"
+        })
+    } catch (error: any) {
+        return res.status(500).json({
+            success: false,
+            message: 'Error deleting property details.',
+            error: error.message
+        });
     }
 }

@@ -64,5 +64,5 @@ export async function updatePropertyDetails (id: number, description: string, ty
         return updated
     } catch (error) {
         throw new Error(`Error updating property details: ${error}`)
-    }
-}
+    };
+};

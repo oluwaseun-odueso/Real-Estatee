@@ -2,7 +2,7 @@ import express from 'express';
 import { verifySellerToken } from '../auth/jwtAuth'
 
 import { 
-    addProperty, getProperty, updateProperty 
+    addProperty, deleteProperty, getProperty, updateProperty 
 } from '../controllers/property';
 
 import { 
@@ -17,5 +17,6 @@ router.get('/get_property/:id', getProperty)
 router.get('/get_property_features/:id', getPropertyFeatures)
 router.put('/update_property/:id', verifySellerToken, updateProperty)
 router.put('/updated_property_features/:id', verifySellerToken, updatePropertyFeatures)
+router.delete('/delete_property/:id', verifySellerToken, deleteProperty)
 
 export default router;
