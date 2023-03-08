@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node dist/src/app.js",
     "postinstall": "tsc",
-    "build": "nodemon dist/src/functions/propertyFunctions.js",
+    "build": "nodemon dist/src/app.js",
     "dev": "nodemon src/app.ts"
   },
   "author": "Oluwaseun Odueso",
