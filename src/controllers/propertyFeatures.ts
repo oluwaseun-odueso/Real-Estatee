@@ -1,7 +1,7 @@
 import {Request, Response} from 'express';
 import { checkIfFeatureExists } from '../functions/featuresFunctions';
 import { checkIfPropertyExists } from '../functions/propertyFunctions';
-import { addFeature } from '../functions/propertyFeaturesFunctions';
+import { addFeature, getFeatures } from '../functions/propertyFeaturesFunctions';
 
 export async function addPropertyFeature (req: Request, res: Response) {
     try {
@@ -39,3 +39,27 @@ export async function addPropertyFeature (req: Request, res: Response) {
         });
     };
 };
+
+export async function getPropertyFeatures (req: Request, res: Response) {
+    try {
+        const propertyId = parseInt(req.params.id, 10)
+        const features = await getFeatures(propertyId)
+        if (!features) {
+            res.status(400).send({
+                success: false,
+                message: "This property does not have any added feature"
+            });
+            return;
+        }; 
+        res.status(200).send({ 
+            success: true,
+            features
+        })
+    } catch (error: any) {
+        return res.status(500).json({
+            success: false,
+            message: "Error getting property's features",
+            error: error.message
+        });
+    }
+}
