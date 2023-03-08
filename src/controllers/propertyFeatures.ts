@@ -1,7 +1,7 @@
 import {Request, Response} from 'express';
 import { checkIfFeatureExists } from '../functions/featuresFunctions';
 import { checkIfSellerHasProperty } from '../functions/propertyFunctions';
-import { addFeature, getFeaturesForProperty, updateFeatures } from '../functions/propertyFeaturesFunctions';
+import { addFeature, CheckIffeatureAlreadyExistsOnProperty, getFeaturesForProperty, updateFeatures } from '../functions/propertyFeaturesFunctions';
 
 export async function addPropertyFeature (req: Request, res: Response) {
     try {
@@ -28,6 +28,13 @@ export async function addPropertyFeature (req: Request, res: Response) {
                 message: "This feature does not exist, you can add extra features in the other properties box below"}) 
             return;
         };
+
+        if ( await CheckIffeatureAlreadyExistsOnProperty(property_id, feature_id)) {
+            res.status(400).send({ 
+                success: false, 
+                message: "This feature already exists for this property, update to make changes or add another feature"}) 
+            return;
+        }
 
         await addFeature({property_id, feature_id, number});
         const features = await getFeaturesForProperty(property_id)

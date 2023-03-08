@@ -39,3 +39,14 @@ export async function updateFeatures(property_id: number, feature_id: number, nu
         throw new Error(`Error updating seller details: ${error}`)
     };
 };
+
+export async function CheckIffeatureAlreadyExistsOnProperty(property_id: number, feature_id: number) {
+    try {
+        const featureExists = await PropertyFeatures.findOne({
+            where: { property_id, feature_id }
+        })
+        return featureExists ? true : false
+    } catch (error) {
+        throw new Error(`Error checking if feature already exists on property: ${error}`)
+    };  
+};
