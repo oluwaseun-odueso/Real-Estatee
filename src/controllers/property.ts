@@ -1,4 +1,4 @@
-import {Request, Response, NextFunction} from 'express';
+import {Request, Response} from 'express';
 import { addAddress } from '../functions/addressFunctions';
 import { 
     createProperty, 
@@ -54,5 +54,9 @@ export async function getProperty(req: Request, res: Response) {
             message: 'Error adding property.',
             error: error.message
         });
-    }
+    };
+};
+
+export async function updateProperty(req: Request, res: Response) {
+
 }
