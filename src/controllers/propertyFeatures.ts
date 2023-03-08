@@ -1,6 +1,6 @@
 import {Request, Response} from 'express';
 import { checkIfFeatureExists } from '../functions/featuresFunctions';
-import { checkIfPropertyExists } from '../functions/propertyFunctions';
+import { checkIfSellerHasProperty } from '../functions/propertyFunctions';
 import { addFeature, getFeatures } from '../functions/propertyFeaturesFunctions';
 
 export async function addPropertyFeature (req: Request, res: Response) {
@@ -15,7 +15,7 @@ export async function addPropertyFeature (req: Request, res: Response) {
 
         const { property_id, feature_id, number } = req.body;
 
-        if (! await checkIfPropertyExists(property_id, req.seller.id)) { 
+        if (! await checkIfSellerHasProperty(property_id, req.seller.id)) { 
             res.status(400).send({ 
                 success: false, 
                 message: "You cannot add features to a non-existent property"}) 

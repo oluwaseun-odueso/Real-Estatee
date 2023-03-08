@@ -19,7 +19,7 @@ export async function createProperty(propertyDetails: PropertyType): Promise<Cus
     };
 };
 
-export async function checkIfPropertyExists (id: number, seller_id: number): Promise<boolean> {
+export async function checkIfSellerHasProperty (id: number, seller_id: number): Promise<boolean> {
     try {
         const featureExists = await Property.findOne({
             where: { id, seller_id }
@@ -53,3 +53,14 @@ export async function getFullPropertyDetails(property_id: number, property_addre
         throw new Error(`Error getting seller full details: ${error}`)
     };
 };
+
+export async function updatePropertyDetails (id: number, description: string, type: string, price: string) {
+    try {
+        const updated = await Property.update({description, type, price}, {
+            where: { id }
+        });
+        return updated
+    } catch (error) {
+        throw new Error(`Error updating property details: ${error}`)
+    }
+}

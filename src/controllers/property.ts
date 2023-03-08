@@ -1,9 +1,11 @@
 import {Request, Response} from 'express';
-import { addAddress } from '../functions/addressFunctions';
+import { addAddress, updateAddressDetails } from '../functions/addressFunctions';
 import { 
+    checkIfSellerHasProperty,
     createProperty, 
     getFullPropertyDetails, 
-     getPropertyById 
+     getPropertyById, 
+     updatePropertyDetails
     } from '../functions/propertyFunctions';
 
 export async function addProperty(req: Request, res: Response) {
@@ -33,8 +35,8 @@ export async function addProperty(req: Request, res: Response) {
 
 export async function getProperty(req: Request, res: Response) {
     try {
-        const propertyId = parseInt(req.params.id, 10)
-        const property = await getPropertyById(propertyId)
+        const property_id = parseInt(req.params.id, 10)
+        const property = await getPropertyById(property_id)
         if (!property) {
             res.status(400).send({
                 success: false,
@@ -43,7 +45,7 @@ export async function getProperty(req: Request, res: Response) {
             return;
         };
 
-        const propertyDetails = await getFullPropertyDetails(propertyId, property.address_id)
+        const propertyDetails = await getFullPropertyDetails(property_id, property.address_id)
         res.status(200).send({ 
             success: true,
             propertyDetails
@@ -58,5 +60,40 @@ export async function getProperty(req: Request, res: Response) {
 };
 
 export async function updateProperty(req: Request, res: Response) {
+    try {
+        if (!req.body.description || !req.body.type || !req.body.street || !req.body.price) {
+            res.status(400).json({ 
+                success: false, 
+                message: "Please enter all required fields"
+            });
+            return;
+        };
 
+        const property_id = parseInt(req.params.id, 10)
+        const property = await getPropertyById(property_id)
+        if (! await checkIfSellerHasProperty(property_id, req.seller.id)) {
+            res.status(400).send({
+                success: false,
+                message: "Property does not exist"
+            });
+            return;
+        };
+
+        const {description, type, street, city, state, country, postal_code, price} = req.body;
+        await updatePropertyDetails(property_id, description, type, price)
+        await updateAddressDetails(property.address_id, street, city, state, country, postal_code)
+        const new_details = await getFullPropertyDetails(property_id, property.address_id)
+
+        res.status(200).send({
+            success: true,
+            message: "Your property's details has been updated!", 
+            new_details
+        });
+    } catch (error: any) {
+        return res.status(500).json({
+            success: false,
+            message: 'Error updating property details.',
+            error: error.message
+        });
+    }
 }
