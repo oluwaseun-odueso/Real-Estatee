@@ -52,3 +52,14 @@ export async function updateAddressDetails(id: number, street: string, city: str
         throw new Error(`Error updating address details: ${error}`)
     };
 };
+
+export async function deletePropertyAddress(id: number): Promise<number> {
+    try {
+        const deletedAddress = await Address.destroy({
+            where: {id}
+        })
+        return deletedAddress;
+    } catch (error) {
+        throw new Error(`Error deleting seller address: ${error}`)
+    };
+};

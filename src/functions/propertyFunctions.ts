@@ -1,6 +1,7 @@
 import {Property} from '../models/property';
 import {CustomProperty} from '../types/custom';
 import { getOnlyAddressDetails } from './addressFunctions';
+import { getFeaturesForProperty } from './propertyFeaturesFunctions';
 
 export type PropertyType = {
     seller_id: number,
@@ -19,7 +20,7 @@ export async function createProperty(propertyDetails: PropertyType): Promise<Cus
     };
 };
 
-export async function checkIfPropertyExists (id: number, seller_id: number): Promise<boolean> {
+export async function checkIfSellerHasProperty (id: number, seller_id: number): Promise<boolean> {
     try {
         const featureExists = await Property.findOne({
             where: { id, seller_id }
@@ -46,10 +47,33 @@ export async function getFullPropertyDetails(property_id: number, property_addre
     try {
         const propertyDetails = await getPropertyById(property_id);
         const address_details = await getOnlyAddressDetails(property_address_id);
+        const features = await getFeaturesForProperty(property_id)
 
-        const propertyFullDetails = {...propertyDetails, address_details}
+        const propertyFullDetails = {...propertyDetails, address_details, features}
         return propertyFullDetails;
     } catch (error) {
         throw new Error(`Error getting seller full details: ${error}`)
+    };
+};
+
+export async function updatePropertyDetails (id: number, description: string, type: string, price: string) {
+    try {
+        const updated = await Property.update({description, type, price}, {
+            where: { id }
+        });
+        return updated
+    } catch (error) {
+        throw new Error(`Error updating property details: ${error}`)
+    };
+};
+
+export async function deleteSellerProperty(id: number, seller_id: number): Promise<number> {
+    try {
+        const deletedProperty = await Property.destroy({
+            where: {id, seller_id}
+        })
+        return deletedProperty;
+    } catch (error) {
+        throw new Error(`Error deleting seller property: ${error}`)
     };
 };
