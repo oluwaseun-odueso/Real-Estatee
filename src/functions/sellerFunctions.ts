@@ -19,7 +19,7 @@ export async function createSeller(sellerDetails: SellerType): Promise<CustomSel
         const seller = await Seller.create(sellerDetails)
         return JSON.parse(JSON.stringify(seller))
     } catch (error) {
-        throw new Error(`Error creating if seller exists: ${error}`)
+        throw new Error(`Error creating seller: ${error}`)
     };
 };
 
@@ -30,7 +30,7 @@ export async function checkEmail (email: string): Promise<boolean> {
         })
         return emailCheck ? true : false
     } catch (error) {
-        throw new Error(`Error checking if email exists: ${error}`)
+        throw new Error(`Error checking if seller's email exists: ${error}`)
     };
 };
 
@@ -41,7 +41,7 @@ export async function checkPhoneNumber(phone_number: string): Promise<boolean> {
         })
         return phoneNumberCheck ? true : false
     } catch (error) {
-        throw new Error(`Error checking if phone_number exists: ${error}`)
+        throw new Error(`Error checking if seller's phone_number exists: ${error}`)
     };
 };
 
@@ -51,7 +51,7 @@ export async function hashPassword (password: string): Promise<string> {
         const hash = await bcrypt.hash(password, saltRounds);
         return hash
     } catch (error) {
-        throw new Error(`Error hashing password: ${error}`);
+        throw new Error(`Error hashing seller's password: ${error}`);
     };
 };
 
@@ -63,11 +63,11 @@ export async function getSellerByEmail(email: string): Promise<CustomSeller> {
         })
         return JSON.parse(JSON.stringify(seller))
     } catch (error) {
-        throw new Error(`Error getting user by email: ${error}`)
+        throw new Error(`Error getting seller by email: ${error}`)
     };
 };
 
-export async function retrieveHashedPassword(email: string): Promise<string> {
+export async function retrieveSellerHashedPassword(email: string): Promise<string> {
     try {
         const sellerPassword = await Seller.findOne({
             attributes: ["hashed_password"],
@@ -75,16 +75,16 @@ export async function retrieveHashedPassword(email: string): Promise<string> {
         });
         return JSON.parse(JSON.stringify(sellerPassword)).hashed_password;
     } catch (error) {
-        throw new Error(`Error retrieving seller password: ${error}`)
+        throw new Error(`Error retrieving seller's password: ${error}`)
     };
 };
 
-export async function confirmRetrievedPassword(password: string, hashedPassword: string): Promise<boolean> {
+export async function confirmSellerRetrievedPassword(password: string, hashedPassword: string): Promise<boolean> {
     try {
         const confirmPassword = await bcrypt.compare(password, hashedPassword)
         return confirmPassword;
     } catch (error) {
-        throw new Error(`Error comfirming password: ${error}`)
+        throw new Error(`Error comfirming seller's password: ${error}`)
     };
 };
 
@@ -108,7 +108,7 @@ export async function getSellerWithoutAddressId(id: number) {
         })
         return JSON.parse(JSON.stringify(seller))
     } catch (error) {
-        throw new Error(`Error getting seller by id: ${error}`)
+        throw new Error(`Error getting only seller's address details by id: ${error}`)
     };
 };
 
@@ -120,7 +120,7 @@ export async function getFullSellerDetails(seller_id: number, seller_address_id:
         const sellerFullDetails = {...sellerDetails, address_details}
         return sellerFullDetails;
     } catch (error) {
-        throw new Error(`Error getting seller full details: ${error}`)
+        throw new Error(`Error getting seller's full details: ${error}`)
     };
 };
 
@@ -135,7 +135,7 @@ export async function updateSellerAccountDetails(id: number, first_name: string,
         });
         return updated
     } catch (error) {
-        throw new Error(`Error updating seller details: ${error}`)
+        throw new Error(`Error updating seller's details: ${error}`)
     };
 };
 
@@ -146,7 +146,7 @@ export async function deleteSellerAccount(id: number): Promise<number> {
         })
         return deletedAccount;
     } catch (error) {
-        throw new Error(`Error deleting seller account: ${error}`)
+        throw new Error(`Error deleting seller's account: ${error}`)
     };
 };
 
@@ -157,6 +157,6 @@ export async function saveSellerImageKey(id: number, image_key: string) {
         })
         return updated
     } catch (error) {
-        throw new Error(`Error saving profile photo: ${error}`)
+        throw new Error(`Error saving seller's profile photo: ${error}`)
     };
 };

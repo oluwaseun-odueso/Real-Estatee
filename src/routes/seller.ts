@@ -1,5 +1,5 @@
 import express, { Router, Request, Response } from 'express';
-import { verifySellerToken } from '../auth/jwtAuth';
+import { verifySellerToken } from '../auth/sellerAuth';
 // import {upload} from '../images2/uploads';
 
 import multer from 'multer';

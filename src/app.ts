@@ -1,6 +1,7 @@
 import express, { Application, Request, Response, NextFunction} from 'express';
 import sellerRoutes from './routes/seller';
 import propertyRoutes from './routes/property';
+import buyerRoutes from './routes/buyer'
 import images from './images/controller';
 import cors from 'cors'
 require('dotenv').config();
@@ -17,6 +18,7 @@ app.use(
 )
 app.use('/seller', sellerRoutes);
 app.use('/property', propertyRoutes);
+app.use('/buyer', buyerRoutes)
 app.use('/image', images)
 
 app.get('/', (req: Request, res: Response) => {

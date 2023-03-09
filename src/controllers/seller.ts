@@ -1,5 +1,5 @@
 import {Request, Response} from 'express';
-import { generateSellerToken } from '../auth/jwtAuth';
+import { generateSellerToken } from '../auth/sellerAuth';
 import { 
     addAddress,
     updateAddressDetails
@@ -10,11 +10,11 @@ import {
     createSeller,
     hashPassword,
     checkIfEntriesMatch, 
-    confirmRetrievedPassword, 
+    confirmSellerRetrievedPassword, 
     getSellerByEmail, 
     getSellerById, 
     getFullSellerDetails, 
-    retrieveHashedPassword, 
+    retrieveSellerHashedPassword, 
     updateSellerAccountDetails,
     deleteSellerAccount,
     saveSellerImageKey
@@ -56,7 +56,7 @@ export async function signUpSeller (req: Request, res: Response) {
     } catch (error: any) {
         return res.status(500).json({
             success: false,
-            message: 'Error creating seller account',
+            message: "Error creating seller's account",
             error: error.message
         });
     };
@@ -79,8 +79,8 @@ export async function loginSeller (req: Request, res: Response) {
             return;
         };
 
-        const collectedUserPassword = await retrieveHashedPassword(email)
-        if (await confirmRetrievedPassword(password, collectedUserPassword) !== true) {
+        const collectedSellerPassword = await retrieveSellerHashedPassword(email)
+        if (await confirmSellerRetrievedPassword(password, collectedSellerPassword) !== true) {
             res.status(400).send({ success: false, message: "You have entered an incorrect password"})
             return;
         };
