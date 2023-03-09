@@ -67,7 +67,7 @@ export async function getSellerByEmail(email: string): Promise<CustomSeller> {
     };
 };
 
-export async function retrieveHashedPassword(email: string): Promise<string> {
+export async function retrieveSellerHashedPassword(email: string): Promise<string> {
     try {
         const sellerPassword = await Seller.findOne({
             attributes: ["hashed_password"],
@@ -79,7 +79,7 @@ export async function retrieveHashedPassword(email: string): Promise<string> {
     };
 };
 
-export async function confirmRetrievedPassword(password: string, hashedPassword: string): Promise<boolean> {
+export async function confirmSellerRetrievedPassword(password: string, hashedPassword: string): Promise<boolean> {
     try {
         const confirmPassword = await bcrypt.compare(password, hashedPassword)
         return confirmPassword;
