@@ -56,7 +56,7 @@ export async function signUpSeller (req: Request, res: Response) {
     } catch (error: any) {
         return res.status(500).json({
             success: false,
-            message: 'Error creating seller account',
+            message: "Error creating seller's account",
             error: error.message
         });
     };
