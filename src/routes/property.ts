@@ -21,7 +21,7 @@ router.post('/add_property_features/:id', verifySellerToken, addPropertyFeature)
 router.get('/get_property/:id', getProperty)
 router.get('/get_property_features/:id', getPropertyFeatures)
 router.put('/update_property/:id', verifySellerToken, updateProperty)
-router.put('/updated_property_features/:id', verifySellerToken, updatePropertyFeatures)
+router.put('/update_property_features/:id', verifySellerToken, updatePropertyFeatures)
 router.delete('/delete_property/:id', verifySellerToken, deleteProperty)
 
 export default router;
