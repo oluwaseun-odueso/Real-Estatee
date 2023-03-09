@@ -122,7 +122,7 @@ export async function deleteProperty(req: Request, res: Response) {
     } catch (error: any) {
         return res.status(500).json({
             success: false,
-            message: 'Error deleting property details.',
+            message: 'Error deleting property.',
             error: error.message
         });
     }
