@@ -66,3 +66,14 @@ export async function updatePropertyDetails (id: number, description: string, ty
         throw new Error(`Error updating property details: ${error}`)
     };
 };
+
+export async function deleteSellerProperty(id: number, seller_id: number): Promise<number> {
+    try {
+        const deletedProperty = await Property.destroy({
+            where: {id, seller_id}
+        })
+        return deletedProperty;
+    } catch (error) {
+        throw new Error(`Error deleting seller property: ${error}`)
+    };
+};

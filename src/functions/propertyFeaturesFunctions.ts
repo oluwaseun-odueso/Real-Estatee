@@ -50,3 +50,14 @@ export async function CheckIffeatureAlreadyExistsOnProperty(property_id: number,
         throw new Error(`Error checking if feature already exists on property: ${error}`)
     };  
 };
+
+export async function deletePropertyFeatures(property_id: number): Promise<number> {
+    try {
+        const deletedFeatures = await PropertyFeatures.destroy({
+            where: {property_id}
+        })
+        return deletedFeatures;
+    } catch (error) {
+        throw new Error(`Error deleting property's features: ${error}`)
+    };
+};

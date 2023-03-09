@@ -1,11 +1,13 @@
 import {Request, Response} from 'express';
-import { addAddress, updateAddressDetails } from '../functions/addressFunctions';
+import { addAddress, deletePropertyAddress, updateAddressDetails } from '../functions/addressFunctions';
+import { deletePropertyFeatures } from '../functions/propertyFeaturesFunctions';
 import { 
     checkIfSellerHasProperty,
     createProperty, 
+    deleteSellerProperty, 
     getFullPropertyDetails, 
-     getPropertyById, 
-     updatePropertyDetails
+    getPropertyById, 
+    updatePropertyDetails
     } from '../functions/propertyFunctions';
 
 export async function addProperty(req: Request, res: Response) {
@@ -101,8 +103,7 @@ export async function updateProperty(req: Request, res: Response) {
 export async function deleteProperty(req: Request, res: Response) {
     try {
         const property_id = parseInt(req.params.id, 10)
-        const property = await getPropertyById(property_id)
-        if (!property) {
+        if (!await checkIfSellerHasProperty(property_id, req.seller.id)) {
             res.status(400).send({
                 success: false,
                 message: "Property does not exist"
@@ -110,6 +111,7 @@ export async function deleteProperty(req: Request, res: Response) {
             return;
         };
 
+        const property = await getPropertyById(property_id)
         await deletePropertyAddress(property.address_id)
         await deletePropertyFeatures(property_id)
         await deleteSellerProperty(property_id, req.seller.id)
