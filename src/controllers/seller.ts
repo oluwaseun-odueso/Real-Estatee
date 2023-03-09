@@ -1,5 +1,5 @@
 import {Request, Response} from 'express';
-import { generateSellerToken } from '../auth/jwtAuth';
+import { generateSellerToken } from '../auth/sellerAuth';
 import { 
     addAddress,
     updateAddressDetails

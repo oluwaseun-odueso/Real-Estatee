@@ -1,13 +1,18 @@
 import express from 'express';
-import { verifySellerToken } from '../auth/jwtAuth'
+import { verifySellerToken } from '../auth/sellerAuth'
 
 import { 
-    addProperty, deleteProperty, getProperty, updateProperty 
+    addProperty, 
+    deleteProperty, 
+    getProperty, 
+    updateProperty 
 } from '../controllers/property';
 
 import { 
-    addPropertyFeature, getPropertyFeatures, updatePropertyFeatures 
-} from '../controllers/propertyFeatures';
+    addPropertyFeature, 
+    getPropertyFeatures, 
+    updatePropertyFeatures 
+} from '../controllers/propertyFeature';
 
 const router = express.Router()
 

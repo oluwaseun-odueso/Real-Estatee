@@ -125,5 +125,5 @@ export async function deleteProperty(req: Request, res: Response) {
             message: 'Error deleting property.',
             error: error.message
         });
-    }
-}
+    };
+};

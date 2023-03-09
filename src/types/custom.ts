@@ -9,6 +9,17 @@ export type CustomSeller = {
     hashed_password: string, 
 };
 
+export type CustomBuyer = {
+    id: number;
+    address_id: number;
+    first_name: string;
+    last_name: string;
+    email: string;
+    phone_number: string;
+    image_key?: string;
+    hashed_password: string;
+};
+
 export type CustomAddress = {
     id: number,
     street: string,
