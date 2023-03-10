@@ -7,6 +7,7 @@ import {
     checkIfEntriesMatch, 
     confirmBuyerRetrievedPassword, 
     createBuyer, 
+    deleteAccount, 
     getBuyerByEmail, 
     getBuyerById, 
     getFullBuyerDetails, 
@@ -157,6 +158,29 @@ export async function getBuyerAccount (req: Request, res: Response) {
         return res.status(500).json({
             success: false,
             message: "Error getting buyer's account details",
+            error: error.message
+        });
+    };
+};
+
+export async function deleteBuyerAccount (req: Request, res: Response) {
+    try {
+        const deletedAccount = await deleteAccount(req.buyer.id)
+        if (deletedAccount === 1) { 
+            res.status(200).send({
+                success: true,
+                message: "Your account has been deleted!"
+            })
+            return
+        };
+        res.status(400).send({
+            success: false,
+            message: "You do not have an account, sign up to create an account"
+        });
+    } catch (error: any) {
+        return res.status(500).json({
+            success: false,
+            message: 'Could not delete your account',
             error: error.message
         });
     };

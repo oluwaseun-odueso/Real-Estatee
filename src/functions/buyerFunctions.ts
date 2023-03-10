@@ -126,3 +126,14 @@ export async function updateBuyerAccountDetails(id: number, first_name: string, 
         throw new Error(`Error updating buyer's details: ${error}`)
     };
 };
+
+export async function deleteAccount(id: number): Promise<number> {
+    try {
+        const deletedAccount = await Buyer.destroy({
+            where: {id}
+        })
+        return deletedAccount;
+    } catch (error) {
+        throw new Error(`Error deleting buyer's account: ${error}`)
+    };
+};

@@ -12,13 +12,13 @@ if (!secretKey) {
 
 export function generateBuyerToken(payload: BuyerType): Promise<string> {
   return new Promise((resolve, reject) => {
-    jwt.sign(payload, secretKey, { expiresIn: "10m" }, (error, token) => {
+    jwt.sign(payload, secretKey, { expiresIn: "15m" }, (error, token) => {
       if (error) {
         reject(error);
       } else resolve(token as string);
     });
   });
-}
+};
 
 export async function verifyBuyerToken(
   req: Request,
