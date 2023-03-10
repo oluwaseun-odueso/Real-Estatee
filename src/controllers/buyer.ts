@@ -138,3 +138,26 @@ export async function updateBuyerAccount(req: Request, res: Response) {
         });
     };
 };
+
+export async function getBuyerAccount (req: Request, res: Response) {
+    try {
+        const buyer = await getFullBuyerDetails(req.buyer.id, req.buyer.address_id);
+        if (!buyer) {
+            res.status(400).send({
+                success: false,
+                message: "Oops! You do not have an account, sign up to continue."
+            });
+            return;
+        };
+        res.status(200).send({ 
+            success: true,
+            buyer
+        });
+    } catch (error: any) {
+        return res.status(500).json({
+            success: false,
+            message: "Error getting buyer's account details",
+            error: error.message
+        });
+    };
+};

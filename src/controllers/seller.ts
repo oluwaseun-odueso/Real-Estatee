@@ -166,7 +166,7 @@ export async function getSellerAccount (req:Request, res: Response) {
     } catch (error: any) {
         return res.status(500).json({
             success: false,
-            message: 'Error getting account details',
+            message: "Error getting seller's account details",
             error: error.message
         });
     };
