@@ -1,0 +1,224 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.uploadSellerImage = exports.deleteAccount = exports.getSellerAccount = exports.updateSellerAccount = exports.loginSeller = exports.signUpSeller = void 0;
+const sellerAuth_1 = require("../auth/sellerAuth");
+const addressFunctions_1 = require("../functions/addressFunctions");
+const sellerFunctions_1 = require("../functions/sellerFunctions");
+const fs_1 = __importDefault(require("fs"));
+const util_1 = __importDefault(require("util"));
+const s3_1 = require("../images/s3");
+const unlinkFile = util_1.default.promisify(fs_1.default.unlink);
+async function signUpSeller(req, res) {
+    try {
+        if (!req.body.first_name || !req.body.last_name || !req.body.email || !req.body.phone_number || !req.body.street || !req.body.password) {
+            res.status(400).json({
+                success: false,
+                message: "Please enter all required fields"
+            });
+            return;
+        }
+        ;
+        const { first_name, last_name, email, phone_number, street, city, state, country, image_key, password } = req.body;
+        if (await (0, sellerFunctions_1.checkEmail)(email)) {
+            res.status(400).send({ success: false, message: "Email already exists" });
+            return;
+        }
+        ;
+        if (await (0, sellerFunctions_1.checkPhoneNumber)(phone_number)) {
+            res.status(400).send({ success: false, message: "Phone number already exists" });
+            return;
+        }
+        ;
+        const hashed_password = await (0, sellerFunctions_1.hashPassword)(password);
+        const address = await (0, addressFunctions_1.addAddress)({ street, city, state, country });
+        const address_id = address.id;
+        await (0, sellerFunctions_1.createSeller)({ address_id, first_name, last_name, email, phone_number, image_key, hashed_password });
+        const seller = await (0, sellerFunctions_1.getSellerByEmail)(email);
+        res.status(201).send({ success: true, message: "Your account has been created", seller });
+    }
+    catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Error creating seller's account",
+            error: error.message
+        });
+    }
+    ;
+}
+exports.signUpSeller = signUpSeller;
+;
+async function loginSeller(req, res) {
+    try {
+        if (!req.body.email || !req.body.password) {
+            res.status(400).json({
+                success: false,
+                message: "Please enter email and password"
+            });
+            return;
+        }
+        ;
+        const { email, password } = req.body;
+        const sellerDetails = await (0, sellerFunctions_1.getSellerByEmail)(email);
+        if (!sellerDetails) {
+            res.status(400).send({ success: false, message: "The email you entered does not exist" });
+            return;
+        }
+        ;
+        const collectedSellerPassword = await (0, sellerFunctions_1.retrieveSellerHashedPassword)(email);
+        if (await (0, sellerFunctions_1.confirmSellerRetrievedPassword)(password, collectedSellerPassword) !== true) {
+            res.status(400).send({ success: false, message: "You have entered an incorrect password" });
+            return;
+        }
+        ;
+        const seller = await (0, sellerFunctions_1.getFullSellerDetails)(sellerDetails.id, sellerDetails.address_id);
+        const token = await (0, sellerAuth_1.generateSellerToken)(seller);
+        res.status(200).send({
+            success: true,
+            message: "You have successfully logged in",
+            seller,
+            token
+        });
+    }
+    catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Error logging in seller',
+            error: error.message
+        });
+    }
+    ;
+}
+exports.loginSeller = loginSeller;
+;
+async function updateSellerAccount(req, res) {
+    try {
+        if (!req.body.first_name || !req.body.last_name || !req.body.email || !req.body.phone_number || !req.body.street) {
+            res.status(400).json({
+                success: false,
+                message: "Please enter all required fields"
+            });
+            return;
+        }
+        ;
+        const { first_name, last_name, email, phone_number, street, city, state, country, postal_code } = req.body;
+        const seller = await (0, sellerFunctions_1.getSellerById)(req.seller.id);
+        if (await (0, sellerFunctions_1.checkEmail)(email) && !(0, sellerFunctions_1.checkIfEntriesMatch)(seller.email, email)) {
+            res.status(400).send({
+                success: false,
+                message: "Email already exists"
+            });
+            return;
+        }
+        ;
+        if (await (0, sellerFunctions_1.checkPhoneNumber)(phone_number) && !(0, sellerFunctions_1.checkIfEntriesMatch)(seller.phone_number, phone_number)) {
+            res.status(400).send({
+                success: false,
+                message: "Phone number already exists"
+            });
+            return;
+        }
+        ;
+        await (0, sellerFunctions_1.updateSellerAccountDetails)(req.seller.id, first_name, last_name, email, phone_number);
+        await (0, addressFunctions_1.updateAddressDetails)(req.seller.address_id, street, city, state, country, postal_code);
+        const new_details = await (0, sellerFunctions_1.getFullSellerDetails)(req.seller.id, req.seller.address_id);
+        res.status(200).send({
+            success: true,
+            message: 'Your account has been updated!',
+            new_details
+        });
+    }
+    catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Error updating seller account',
+            error: error.message
+        });
+    }
+    ;
+}
+exports.updateSellerAccount = updateSellerAccount;
+;
+async function getSellerAccount(req, res) {
+    try {
+        const seller = await (0, sellerFunctions_1.getFullSellerDetails)(req.seller.id, req.seller.address_id);
+        if (!seller) {
+            res.status(400).send({
+                success: false,
+                message: "Oops! You do not have an account, sign up to continue."
+            });
+            return;
+        }
+        ;
+        res.status(200).send({
+            success: true,
+            seller
+        });
+    }
+    catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Error getting seller's account details",
+            error: error.message
+        });
+    }
+    ;
+}
+exports.getSellerAccount = getSellerAccount;
+;
+async function deleteAccount(req, res) {
+    try {
+        const deletedAccount = await (0, sellerFunctions_1.deleteSellerAccount)(req.seller.id);
+        if (deletedAccount === 1) {
+            res.status(200).send({
+                success: true,
+                message: "Your account has been deleted!"
+            });
+            return;
+        }
+        ;
+        res.status(400).send({
+            success: false,
+            message: "You do not have an account, sign up to create an account"
+        });
+    }
+    catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Could not delete your account',
+            error: error.message
+        });
+    }
+    ;
+}
+exports.deleteAccount = deleteAccount;
+;
+async function uploadSellerImage(req, res) {
+    try {
+        if (!req.file) {
+            res.status(400).send({ message: "Please select an image" });
+            // throw new Error ("Please select an image");
+            return;
+        }
+        const file = req.file;
+        console.log(file);
+        const result = await (0, s3_1.uploadFile)(file.buffer);
+        console.log(result);
+        await unlinkFile(file.path);
+        await (0, sellerFunctions_1.saveSellerImageKey)(req.seller.id, result.Location);
+        res.status(200).send({
+            success: true,
+            message: "Profile picture uploaded successfully"
+        });
+    }
+    catch (error) {
+        res.status(500).send({
+            success: false,
+            message: 'Could not upload photo',
+            error: error.message
+        });
+    }
+}
+exports.uploadSellerImage = uploadSellerImage;
