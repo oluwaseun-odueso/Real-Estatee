@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteAccount = exports.updateBuyerAccountDetails = exports.checkIfEntriesMatch = exports.getFullBuyerDetails = exports.confirmBuyerRetrievedPassword = exports.retrieveBuyerHashedPassword = exports.getBuyerById = exports.getBuyerByEmail = exports.hashBuyerPassword = exports.checkBuyerPhoneNumber = exports.checkBuyerEmail = exports.createBuyer = void 0;
+exports.deleteAccount = exports.updatePassword = exports.updateBuyerAccountDetails = exports.checkIfEntriesMatch = exports.getFullBuyerDetails = exports.confirmBuyerRetrievedPassword = exports.retrieveBuyerHashedPassword = exports.getBuyerById = exports.getBuyerByEmail = exports.hashBuyerPassword = exports.checkBuyerPhoneNumber = exports.checkBuyerEmail = exports.createBuyer = void 0;
 const buyer_1 = require("../models/buyer");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const addressFunctions_1 = require("./addressFunctions");
@@ -138,10 +138,10 @@ exports.checkIfEntriesMatch = checkIfEntriesMatch;
 ;
 async function updateBuyerAccountDetails(id, first_name, last_name, email, phone_number) {
     try {
-        const updated = await buyer_1.Buyer.update({ first_name, last_name, email, phone_number }, {
+        const updatedDetails = await buyer_1.Buyer.update({ first_name, last_name, email, phone_number }, {
             where: { id }
         });
-        return updated;
+        return updatedDetails;
     }
     catch (error) {
         throw new Error(`Error updating buyer's details: ${error}`);
@@ -150,6 +150,18 @@ async function updateBuyerAccountDetails(id, first_name, last_name, email, phone
 }
 exports.updateBuyerAccountDetails = updateBuyerAccountDetails;
 ;
+async function updatePassword(id, hashed_password) {
+    try {
+        const updatedPassword = await buyer_1.Buyer.update({ hashed_password }, {
+            where: { id }
+        });
+        return updatedPassword;
+    }
+    catch (error) {
+        throw new Error(`Error updating buyer's password: ${error}`);
+    }
+}
+exports.updatePassword = updatePassword;
 async function deleteAccount(id) {
     try {
         const deletedAccount = await buyer_1.Buyer.destroy({

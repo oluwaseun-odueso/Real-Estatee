@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteBuyerAccount = exports.getBuyerAccount = exports.updateBuyerAccount = exports.loginBuyer = exports.signUpBuyer = void 0;
+exports.updateBuyerPassword = exports.deleteBuyerAccount = exports.getBuyerAccount = exports.updateBuyerAccount = exports.loginBuyer = exports.signUpBuyer = void 0;
 const buyerAuth_1 = require("../auth/buyerAuth");
 const addressFunctions_1 = require("../functions/addressFunctions");
 const buyerFunctions_1 = require("../functions/buyerFunctions");
@@ -187,4 +187,39 @@ async function deleteBuyerAccount(req, res) {
     ;
 }
 exports.deleteBuyerAccount = deleteBuyerAccount;
+;
+async function updateBuyerPassword(req, res) {
+    try {
+        if (!req.body.current_password || !req.body.new_password) {
+            res.status(400).json({
+                success: false,
+                message: "Please enter your current password and a new password"
+            });
+            return;
+        }
+        ;
+        const { current_password, new_password } = req.body;
+        const collectedBuyerPassword = await (0, buyerFunctions_1.retrieveBuyerHashedPassword)(req.buyer.email);
+        if (await (0, buyerFunctions_1.confirmBuyerRetrievedPassword)(current_password, collectedBuyerPassword) !== true) {
+            res.status(400).send({ success: false, message: "Current password is incorrect" });
+            return;
+        }
+        ;
+        const new_hashed_password = await (0, buyerFunctions_1.hashBuyerPassword)(new_password);
+        await (0, buyerFunctions_1.updatePassword)(req.buyer.id, new_hashed_password);
+        res.status(200).send({
+            success: true,
+            message: 'Your password has been updated!',
+        });
+    }
+    catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Error updating password',
+            error: error.message
+        });
+    }
+    ;
+}
+exports.updateBuyerPassword = updateBuyerPassword;
 ;
