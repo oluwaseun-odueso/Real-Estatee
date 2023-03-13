@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.uploadSellerImage = exports.deleteAccount = exports.getSellerAccount = exports.updateSellerAccount = exports.loginSeller = exports.signUpSeller = void 0;
+exports.uploadSellerImage = exports.updateSellerPassword = exports.deleteAccount = exports.getSellerAccount = exports.updateSellerAccount = exports.loginSeller = exports.signUpSeller = void 0;
 const sellerAuth_1 = require("../auth/sellerAuth");
 const addressFunctions_1 = require("../functions/addressFunctions");
 const sellerFunctions_1 = require("../functions/sellerFunctions");
@@ -194,6 +194,41 @@ async function deleteAccount(req, res) {
     ;
 }
 exports.deleteAccount = deleteAccount;
+;
+async function updateSellerPassword(req, res) {
+    try {
+        if (!req.body.current_password || !req.body.new_password) {
+            res.status(400).json({
+                success: false,
+                message: "Please enter your current password and a new password"
+            });
+            return;
+        }
+        ;
+        const { current_password, new_password } = req.body;
+        const collectedSellerPassword = await (0, sellerFunctions_1.retrieveSellerHashedPassword)(req.seller.email);
+        if (await (0, sellerFunctions_1.confirmSellerRetrievedPassword)(current_password, collectedSellerPassword) !== true) {
+            res.status(400).send({ success: false, message: "Current password is incorrect" });
+            return;
+        }
+        ;
+        const new_hashed_password = await (0, sellerFunctions_1.hashPassword)(new_password);
+        await (0, sellerFunctions_1.updatePassword)(req.seller.id, new_hashed_password);
+        res.status(200).send({
+            success: true,
+            message: 'Your password has been updated!',
+        });
+    }
+    catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Error updating password',
+            error: error.message
+        });
+    }
+    ;
+}
+exports.updateSellerPassword = updateSellerPassword;
 ;
 async function uploadSellerImage(req, res) {
     try {

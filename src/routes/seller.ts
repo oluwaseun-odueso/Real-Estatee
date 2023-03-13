@@ -10,6 +10,7 @@ import {
     loginSeller, 
     signUpSeller, 
     updateSellerAccount,
+    updateSellerPassword,
     uploadSellerImage
 } from '../controllers/seller';
 
@@ -21,5 +22,6 @@ router.put('/update_account', verifySellerToken, updateSellerAccount);
 router.get('/get_account', verifySellerToken, getSellerAccount);
 router.delete('/delete_account', verifySellerToken, deleteAccount);
 router.post('/upload-image', verifySellerToken,  upload.single('image'), uploadSellerImage);
+router.put('/update_password', verifySellerToken, updateSellerPassword)
 
 export default router;
