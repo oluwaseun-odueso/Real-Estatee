@@ -12,7 +12,7 @@ const app: Application = express();
 app.use(express.json());
 app.use(
     cors({
-        origin: "http://localhost:3000",
+        origin: "http://localhost:3000" || "https://real-estate-collab.vercel.app/",
         credentials: true
     })
 )
@@ -24,6 +24,10 @@ app.use('/image', images)
 app.get('/', (req: Request, res: Response) => {
     res.status(200).send({success: true, message: " Official Real Estate Page"});
 });
+
+app.get('/logout', (req, res) => {
+    
+})
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
