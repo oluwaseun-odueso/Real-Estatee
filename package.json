@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "npm install && tsc",
-    "start": "node ./dist/src/app.js"
+    "build": "tsc",
+    "start": "node ./dist/src/app.js",
+    "dev": "nodemon ./dist/src/app.js"
   },
   "author": "Oluwaseun Odueso",
   "license": "ISC",

@@ -13,7 +13,8 @@ import {
     getFullBuyerDetails, 
     hashBuyerPassword,
     retrieveBuyerHashedPassword,
-    updateBuyerAccountDetails
+    updateBuyerAccountDetails,
+    updatePassword
 } from '../functions/buyerFunctions';
 
 export async function signUpBuyer (req: Request, res: Response) {
@@ -135,6 +136,38 @@ export async function updateBuyerAccount(req: Request, res: Response) {
         return res.status(500).json({
             success: false,
             message: 'Error updating buyer account',
+            error: error.message
+        });
+    };
+};
+
+export async function updateBuyerPassword (req: Request, res: Response) {
+    try {
+        if (!req.body.current_password || !req.body.new_password) {
+            res.status(400).json({ 
+                success: false, 
+                message: "Please enter your current password and a new password"
+            });
+            return;
+        };
+        
+        const {current_password, new_password} = req.body;
+        const collectedBuyerPassword = await retrieveBuyerHashedPassword(req.buyer.email)
+        if (await confirmBuyerRetrievedPassword(current_password, collectedBuyerPassword) !== true) {
+            res.status(400).send({ success: false, message: "Current password is incorrect"})
+            return;
+        };
+
+        const new_hashed_password = await hashBuyerPassword(new_password);
+        await updatePassword(req.buyer.id, new_hashed_password)
+        res.status(200).send({
+            success: true,
+            message: 'Your password has been updated!', 
+        });
+    } catch (error: any) {
+        return res.status(500).json({
+            success: false,
+            message: 'Error updating password',
             error: error.message
         });
     };

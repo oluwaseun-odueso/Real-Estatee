@@ -118,14 +118,25 @@ export function checkIfEntriesMatch(firstValue: string, secondValue: string): bo
 
 export async function updateBuyerAccountDetails(id: number, first_name: string, last_name: string, email: string, phone_number: string) {
     try {
-        const updated = await Buyer.update({first_name, last_name, email, phone_number}, {
+        const updatedDetails = await Buyer.update({first_name, last_name, email, phone_number}, {
             where: { id }
         });
-        return updated
+        return updatedDetails
     } catch (error) {
         throw new Error(`Error updating buyer's details: ${error}`)
     };
 };
+
+export async function updatePassword (id: number, hashed_password: string) {
+    try {
+        const updatedPassword = await Buyer.update({hashed_password}, {
+            where: {id}
+        })
+        return updatedPassword
+    } catch (error) {
+        throw new Error(`Error updating buyer's password: ${error}`)
+    }
+}
 
 export async function deleteAccount(id: number): Promise<number> {
     try {

@@ -5,7 +5,8 @@ import {
     getBuyerAccount,
     loginBuyer,
     signUpBuyer, 
-    updateBuyerAccount
+    updateBuyerAccount,
+    updateBuyerPassword
 } from '../controllers/buyer';
 const router = express.Router();
 
@@ -14,5 +15,6 @@ router.post('/login', loginBuyer)
 router.put('/update_account', verifyBuyerToken, updateBuyerAccount)
 router.get('/get_account', verifyBuyerToken, getBuyerAccount)
 router.delete('/delete_account', verifyBuyerToken, deleteBuyerAccount)
+router.put('/update_password', verifyBuyerToken, updateBuyerPassword)
 
 export default router;
