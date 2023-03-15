@@ -1,10 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteBuyerAccount = exports.getBuyerAccount = exports.updateBuyerPassword = exports.updateBuyerAccount = exports.loginBuyer = exports.signUpBuyer = void 0;
+const express_validator_1 = require("express-validator");
 const buyerAuth_1 = require("../auth/buyerAuth");
 const addressFunctions_1 = require("../functions/addressFunctions");
 const buyerFunctions_1 = require("../functions/buyerFunctions");
 async function signUpBuyer(req, res) {
+    const errors = (0, express_validator_1.validationResult)(req);
     try {
         if (!req.body.first_name || !req.body.last_name || !req.body.email || !req.body.phone_number || !req.body.street || !req.body.password) {
             res.status(400).json({
@@ -25,17 +27,32 @@ async function signUpBuyer(req, res) {
             return;
         }
         ;
+        // Validate email and password
+        if (!errors.isEmpty()) {
+            const error = errors.array()[0];
+            if (error.param === 'email') {
+                return res.status(400).json({ success: false, message: 'Invalid email address. Please try again.' });
+            }
+            if (error.param === 'password') {
+                return res.status(400).json({ success: false, message: 'Password must be at least 8 characters.' });
+            }
+        }
+        // var regularExpression = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/;
         const hashed_password = await (0, buyerFunctions_1.hashBuyerPassword)(password);
         const address = await (0, addressFunctions_1.addAddress)({ street, city, state, country });
         const address_id = address.id;
         await (0, buyerFunctions_1.createBuyer)({ address_id, first_name, last_name, email, phone_number, image_key, hashed_password });
-        const seller = await (0, buyerFunctions_1.getBuyerByEmail)(email);
-        res.status(201).send({ success: true, message: "Your account has been created", seller });
+        const buyer = await (0, buyerFunctions_1.getBuyerByEmail)(email);
+        res.status(201).send({
+            success: true,
+            message: "Your account has been created successfully",
+            buyer
+        });
     }
     catch (error) {
         return res.status(500).json({
             success: false,
-            message: "Error creating buyer's account",
+            message: "An error occurred while creating the buyer's account",
             error: error.message
         });
     }
@@ -78,7 +95,7 @@ async function loginBuyer(req, res) {
     catch (error) {
         return res.status(500).json({
             success: false,
-            message: 'Error logging in buyer',
+            message: "An error occurred while logging in buyer",
             error: error.message
         });
     }

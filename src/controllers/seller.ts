@@ -57,7 +57,7 @@ export async function signUpSeller (req: Request, res: Response) {
     } catch (error: any) {
         return res.status(500).json({
             success: false,
-            message: "Error creating seller's account",
+            message: "An error occurred while creating the seller's account",
             error: error.message
         });
     };
@@ -98,7 +98,7 @@ export async function loginSeller (req: Request, res: Response) {
     } catch (error: any) {
         return res.status(500).json({
             success: false,
-            message: 'Error logging in seller',
+            message: "An error occurred while logging in seller",
             error: error.message
         });
     };
