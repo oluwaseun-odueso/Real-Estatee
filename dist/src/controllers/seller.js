@@ -41,7 +41,7 @@ async function signUpSeller(req, res) {
                 return res.status(400).json({ success: false, message: 'Invalid email address. Please try again.' });
             }
             if (error.param === 'password') {
-                return res.status(400).json({ success: false, message: 'Password must be at least 8 characters.' });
+                return res.status(400).json({ success: false, message: 'Password must be at least 8 characters long.' });
             }
         }
         const hashed_password = await (0, sellerFunctions_1.hashPassword)(password);

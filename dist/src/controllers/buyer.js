@@ -34,7 +34,7 @@ async function signUpBuyer(req, res) {
                 return res.status(400).json({ success: false, message: 'Invalid email address. Please try again.' });
             }
             if (error.param === 'password') {
-                return res.status(400).json({ success: false, message: 'Password must be at least 8 characters.' });
+                return res.status(400).json({ success: false, message: 'Password must be at least 8 characters long, must contain at least one lowercase letter, one uppercase letter, one number and one special character.' });
             }
         }
         // var regularExpression = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/;
