@@ -41,5 +41,5 @@ Seller.init({
 }, {
     // Other model options go here
     sequelize: database_1.default,
-    modelName: 'Seller'
+    modelName: 'Sellers'
 });

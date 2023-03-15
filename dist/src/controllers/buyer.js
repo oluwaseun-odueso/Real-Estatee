@@ -17,16 +17,6 @@ async function signUpBuyer(req, res) {
         }
         ;
         const { first_name, last_name, email, phone_number, street, city, state, country, image_key, password } = req.body;
-        if (await (0, buyerFunctions_1.checkBuyerEmail)(email)) {
-            res.status(400).send({ success: false, message: "Email already exists" });
-            return;
-        }
-        ;
-        if (await (0, buyerFunctions_1.checkBuyerPhoneNumber)(phone_number)) {
-            res.status(400).send({ success: false, message: "Phone number already exists" });
-            return;
-        }
-        ;
         // Validate email and password
         if (!errors.isEmpty()) {
             const error = errors.array()[0];
@@ -37,7 +27,16 @@ async function signUpBuyer(req, res) {
                 return res.status(400).json({ success: false, message: 'Password must be at least 8 characters long, must contain at least one lowercase letter, one uppercase letter, one number and one special character.' });
             }
         }
-        // var regularExpression = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/;
+        if (await (0, buyerFunctions_1.checkBuyerEmail)(email)) {
+            res.status(400).send({ success: false, message: "Email already exists" });
+            return;
+        }
+        ;
+        if (await (0, buyerFunctions_1.checkBuyerPhoneNumber)(phone_number)) {
+            res.status(400).send({ success: false, message: "Phone number already exists" });
+            return;
+        }
+        ;
         const hashed_password = await (0, buyerFunctions_1.hashBuyerPassword)(password);
         const address = await (0, addressFunctions_1.addAddress)({ street, city, state, country });
         const address_id = address.id;
