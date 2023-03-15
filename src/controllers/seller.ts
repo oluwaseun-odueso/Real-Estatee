@@ -1,4 +1,5 @@
 import {Request, Response} from 'express';
+import {validationResult} from 'express-validator'
 import { generateSellerToken } from '../auth/sellerAuth';
 import { 
     addAddress,
@@ -27,6 +28,7 @@ import { uploadFile } from '../images/s3';
 const unlinkFile = util.promisify(fs.unlink)
 
 export async function signUpSeller (req: Request, res: Response) {
+    const errors = validationResult(req)
     try {
         if (!req.body.first_name || !req.body.last_name || !req.body.email || !req.body.phone_number || !req.body.street || !req.body.password) {
             res.status(400).json({ 
@@ -47,6 +49,17 @@ export async function signUpSeller (req: Request, res: Response) {
             return;
         };
 
+        // Validate email and password
+        if (!errors.isEmpty()) {
+            const error = errors.array()[0];
+            if (error.param === 'email') {
+                return res.status(400).json({success: false, message: 'Invalid email address. Please try again.'});
+            }
+            if (error.param === 'password') {
+                return res.status(400).json({success: false, message: 'Password must be at least 8 characters long, must contain at least one lowercase letter, one uppercase letter, one number and one special character.'});
+            }
+        }
+
         const hashed_password = await hashPassword(password);
         const address = await addAddress({street, city, state, country});
         const address_id = address.id;
@@ -57,7 +70,7 @@ export async function signUpSeller (req: Request, res: Response) {
     } catch (error: any) {
         return res.status(500).json({
             success: false,
-            message: "Error creating seller's account",
+            message: "An error occurred while creating the seller's account",
             error: error.message
         });
     };
@@ -98,7 +111,7 @@ export async function loginSeller (req: Request, res: Response) {
     } catch (error: any) {
         return res.status(500).json({
             success: false,
-            message: 'Error logging in seller',
+            message: "An error occurred while logging in seller",
             error: error.message
         });
     };

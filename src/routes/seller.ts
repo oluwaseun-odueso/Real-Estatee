@@ -1,4 +1,5 @@
-import express, { Router, Request, Response } from 'express';
+import express, { Router } from 'express';
+import {body} from 'express-validator'
 import { verifySellerToken } from '../auth/sellerAuth';
 // import {upload} from '../images2/uploads';
 
@@ -16,7 +17,14 @@ import {
 
 const router: Router = express.Router();
 
-router.post('/signup', signUpSeller);
+router.post(
+    '/signup', 
+    body('email').isEmail(), 
+    body('password')
+    .isLength({min: 8})
+    .isLength({min: 8})
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/), 
+    signUpSeller);
 router.post('/login', loginSeller);
 router.put('/update_account', verifySellerToken, updateSellerAccount);
 router.get('/get_account', verifySellerToken, getSellerAccount);
