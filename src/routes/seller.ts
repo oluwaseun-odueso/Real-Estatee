@@ -20,7 +20,10 @@ const router: Router = express.Router();
 router.post(
     '/signup', 
     body('email').isEmail(), 
-    body('password').isLength({min: 8}), 
+    body('password')
+    .isLength({min: 8})
+    .isLength({min: 8})
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/), 
     signUpSeller);
 router.post('/login', loginSeller);
 router.put('/update_account', verifySellerToken, updateSellerAccount);
