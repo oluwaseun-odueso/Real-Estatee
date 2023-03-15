@@ -14,7 +14,7 @@ if (!database || !user || !password) {
 
 const sequelize = new Sequelize(database, user, password, {
   host: host,
-  dialect: "mysql",
+  dialect: "postgres",
 });
 
 sequelize
