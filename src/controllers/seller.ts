@@ -1,4 +1,5 @@
 import {Request, Response} from 'express';
+import {validationResult} from 'express-validator'
 import { generateSellerToken } from '../auth/sellerAuth';
 import { 
     addAddress,
@@ -27,6 +28,7 @@ import { uploadFile } from '../images/s3';
 const unlinkFile = util.promisify(fs.unlink)
 
 export async function signUpSeller (req: Request, res: Response) {
+    const errors = validationResult(req)
     try {
         if (!req.body.first_name || !req.body.last_name || !req.body.email || !req.body.phone_number || !req.body.street || !req.body.password) {
             res.status(400).json({ 
@@ -46,6 +48,17 @@ export async function signUpSeller (req: Request, res: Response) {
             res.status(400).send({ success: false, message: "Phone number already exists"}) 
             return;
         };
+
+        // Validate email and password
+        if (!errors.isEmpty()) {
+            const error = errors.array()[0];
+            if (error.param === 'email') {
+                return res.status(400).json({success: false, message: 'Invalid email address. Please try again.'});
+            }
+            if (error.param === 'password') {
+                return res.status(400).json({success: false, message: 'Password must be at least 8 characters.'});
+            }
+        }
 
         const hashed_password = await hashPassword(password);
         const address = await addAddress({street, city, state, country});

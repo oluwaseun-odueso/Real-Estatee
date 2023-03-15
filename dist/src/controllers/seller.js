@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.uploadSellerImage = exports.updateSellerPassword = exports.deleteAccount = exports.getSellerAccount = exports.updateSellerAccount = exports.loginSeller = exports.signUpSeller = void 0;
+const express_validator_1 = require("express-validator");
 const sellerAuth_1 = require("../auth/sellerAuth");
 const addressFunctions_1 = require("../functions/addressFunctions");
 const sellerFunctions_1 = require("../functions/sellerFunctions");
@@ -12,6 +13,7 @@ const util_1 = __importDefault(require("util"));
 const s3_1 = require("../images/s3");
 const unlinkFile = util_1.default.promisify(fs_1.default.unlink);
 async function signUpSeller(req, res) {
+    const errors = (0, express_validator_1.validationResult)(req);
     try {
         if (!req.body.first_name || !req.body.last_name || !req.body.email || !req.body.phone_number || !req.body.street || !req.body.password) {
             res.status(400).json({
@@ -32,6 +34,16 @@ async function signUpSeller(req, res) {
             return;
         }
         ;
+        // Validate email and password
+        if (!errors.isEmpty()) {
+            const error = errors.array()[0];
+            if (error.param === 'email') {
+                return res.status(400).json({ success: false, message: 'Invalid email address. Please try again.' });
+            }
+            if (error.param === 'password') {
+                return res.status(400).json({ success: false, message: 'Password must be at least 8 characters.' });
+            }
+        }
         const hashed_password = await (0, sellerFunctions_1.hashPassword)(password);
         const address = await (0, addressFunctions_1.addAddress)({ street, city, state, country });
         const address_id = address.id;
