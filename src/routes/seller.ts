@@ -22,7 +22,6 @@ router.post(
     body('email').isEmail(), 
     body('password')
     .isLength({min: 8})
-    .isLength({min: 8})
     .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/), 
     signUpSeller);
 router.post('/login', loginSeller);

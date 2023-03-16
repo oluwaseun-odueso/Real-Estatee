@@ -13,7 +13,6 @@ const seller_1 = require("../controllers/seller");
 const router = express_1.default.Router();
 router.post('/signup', (0, express_validator_1.body)('email').isEmail(), (0, express_validator_1.body)('password')
     .isLength({ min: 8 })
-    .isLength({ min: 8 })
     .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/), seller_1.signUpSeller);
 router.post('/login', seller_1.loginSeller);
 router.put('/update_account', sellerAuth_1.verifySellerToken, seller_1.updateSellerAccount);
