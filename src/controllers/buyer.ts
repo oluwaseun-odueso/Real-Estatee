@@ -78,8 +78,8 @@ export async function loginBuyer (req: Request, res: Response) {
             });
             return;
         };
-
         const {email, password} = req.body;
+
         const buyerDetails = await getBuyerByEmail(email);
         if (!buyerDetails) {
             res.status(400).send({ success: false, message: "The email you entered does not exist"})

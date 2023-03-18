@@ -1,10 +1,10 @@
 import { Sequelize } from "sequelize";
 require("dotenv").config();
 
-const database = process.env.PROD_DATABASE;
-const user = process.env.PROD_USERNAME;
-const password = process.env.PROD_PASSWORD;
-const host = process.env.PROD_HOST
+const database = process.env.RAILWAY_DATABASE;
+const user = process.env.RAILWAY_USERNAME;
+const password = process.env.RAILWAY_PASSWORD;
+const host = process.env.RAILWAY_HOST
 
 if (!database || !user || !password) {
   throw new Error(
@@ -14,7 +14,7 @@ if (!database || !user || !password) {
 
 const sequelize = new Sequelize(database, user, password, {
   host: host,
-  dialect: "postgres",
+  dialect: 'mysql',
 });
 
 sequelize

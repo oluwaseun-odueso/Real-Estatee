@@ -100,6 +100,11 @@ export async function confirmBuyerRetrievedPassword(password: string, hashedPass
     };
 };
 
+
+// confirmBuyerRetrievedPassword("Tomilola33$", "$2b$10$LI.KOpf6WUfBFzuzKOBN1uGP7YvNcdmjYCYUOahlroreL9B6.upZO          ")
+//     .then(i => console.log(i))
+//     .catch(error => console.log(error))
+
 export async function getFullBuyerDetails(buyer_id: number, buyer_address_id: number) {
     try {
         const buyerDetails = await getBuyerById(buyer_id);
