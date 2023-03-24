@@ -17,6 +17,7 @@ import {
     updateBuyerAccountDetails,
     updatePassword
 } from '../functions/buyerFunctions';
+import { mail } from '../util/mail';
 
 export async function signUpBuyer (req: Request, res: Response) {
     const errors = validationResult(req)
@@ -70,6 +71,7 @@ export async function signUpBuyer (req: Request, res: Response) {
 };
 
 export async function loginBuyer (req: Request, res: Response) {
+    const errors = validationResult(req)
     try {
         if (!req.body.email || !req.body.password) {
             res.status(400).json({ 
@@ -79,6 +81,13 @@ export async function loginBuyer (req: Request, res: Response) {
             return;
         };
         const {email, password} = req.body;
+
+        if (!errors.isEmpty()) {
+            const error = errors.array()[0];
+            if (error.param === 'email') {
+                return res.status(400).json({success: false, message: 'Invalid email address. Please try again.'});
+            }
+        }
 
         const buyerDetails = await getBuyerByEmail(email);
         if (!buyerDetails) {
@@ -119,7 +128,7 @@ export async function updateBuyerAccount(req: Request, res: Response) {
             });
             return;
         };
-
+2
         const {first_name, last_name, email, phone_number, street, city, state, country, postal_code} = req.body;
         const buyer = await getBuyerById(req.buyer.id)
         if ( await checkBuyerEmail (email) && ! checkIfEntriesMatch(buyer.email, email)) {
@@ -233,3 +242,25 @@ export async function deleteBuyerAccount (req: Request, res: Response) {
         });
     };
 };
+
+export async function resetPassword (req: Request, res: Response) {
+    try {
+        const buyer = await getBuyerById(req.buyer.id)
+        await mail(buyer.email)
+        console.log("email sent")
+        res.status(200).send({
+            success: true,
+            message: "A reset token has been sent to you registered email"
+        });
+        // .then((res) => {
+        //     console.log(res);
+        // })
+//   .catch((err) => console.log(err));
+    } catch (error: any) {
+        return res.status(500).json({
+            success: false,
+            message: 'Could not process rest password',
+            error: error.message
+        });
+    }
+}

@@ -1,10 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteBuyerAccount = exports.getBuyerAccount = exports.updateBuyerPassword = exports.updateBuyerAccount = exports.loginBuyer = exports.signUpBuyer = void 0;
+exports.resetPassword = exports.deleteBuyerAccount = exports.getBuyerAccount = exports.updateBuyerPassword = exports.updateBuyerAccount = exports.loginBuyer = exports.signUpBuyer = void 0;
 const express_validator_1 = require("express-validator");
 const buyerAuth_1 = require("../auth/buyerAuth");
 const addressFunctions_1 = require("../functions/addressFunctions");
 const buyerFunctions_1 = require("../functions/buyerFunctions");
+const mail_1 = require("../util/mail");
 async function signUpBuyer(req, res) {
     const errors = (0, express_validator_1.validationResult)(req);
     try {
@@ -60,6 +61,7 @@ async function signUpBuyer(req, res) {
 exports.signUpBuyer = signUpBuyer;
 ;
 async function loginBuyer(req, res) {
+    const errors = (0, express_validator_1.validationResult)(req);
     try {
         if (!req.body.email || !req.body.password) {
             res.status(400).json({
@@ -70,6 +72,12 @@ async function loginBuyer(req, res) {
         }
         ;
         const { email, password } = req.body;
+        if (!errors.isEmpty()) {
+            const error = errors.array()[0];
+            if (error.param === 'email') {
+                return res.status(400).json({ success: false, message: 'Invalid email address. Please try again.' });
+            }
+        }
         const buyerDetails = await (0, buyerFunctions_1.getBuyerByEmail)(email);
         if (!buyerDetails) {
             res.status(400).send({ success: false, message: "The email you entered does not exist" });
@@ -112,6 +120,7 @@ async function updateBuyerAccount(req, res) {
             return;
         }
         ;
+        2;
         const { first_name, last_name, email, phone_number, street, city, state, country, postal_code } = req.body;
         const buyer = await (0, buyerFunctions_1.getBuyerById)(req.buyer.id);
         if (await (0, buyerFunctions_1.checkBuyerEmail)(email) && !(0, buyerFunctions_1.checkIfEntriesMatch)(buyer.email, email)) {
@@ -239,3 +248,26 @@ async function deleteBuyerAccount(req, res) {
 }
 exports.deleteBuyerAccount = deleteBuyerAccount;
 ;
+async function resetPassword(req, res) {
+    try {
+        const buyer = await (0, buyerFunctions_1.getBuyerById)(req.buyer.id);
+        await (0, mail_1.mail)(buyer.email);
+        console.log("email sent");
+        res.status(200).send({
+            success: true,
+            message: "A reset token has been sent to you registered email"
+        });
+        // .then((res) => {
+        //     console.log(res);
+        // })
+        //   .catch((err) => console.log(err));
+    }
+    catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Could not process rest password',
+            error: error.message
+        });
+    }
+}
+exports.resetPassword = resetPassword;

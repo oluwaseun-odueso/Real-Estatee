@@ -4,6 +4,7 @@ import propertyRoutes from './routes/property';
 import buyerRoutes from './routes/buyer'
 import images from './images/controller';
 import cors from 'cors'
+import { mail } from './util/mail';
 require('dotenv').config();
 
 const PORT = process.env.PORT || 5000;
@@ -30,5 +31,12 @@ app.get('/logout', (req, res) => {
 })
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+// mail("backendseun@gmail.com")
+//   .then((res) => {
+//     console.log("email sent")
+//     console.log(res);
+//   })
+//   .catch((err) => console.log(err));
 
 module.exports = app;
