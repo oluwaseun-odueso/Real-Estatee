@@ -247,15 +247,10 @@ export async function resetPassword (req: Request, res: Response) {
     try {
         const buyer = await getBuyerById(req.buyer.id)
         await mail(buyer.email)
-        console.log("email sent")
         res.status(200).send({
             success: true,
-            message: "A reset token has been sent to you registered email"
+            message: "A reset token has been sent to your registered email"
         });
-        // .then((res) => {
-        //     console.log(res);
-        // })
-//   .catch((err) => console.log(err));
     } catch (error: any) {
         return res.status(500).json({
             success: false,

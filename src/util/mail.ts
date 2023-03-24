@@ -25,14 +25,11 @@ export async function mail(recipient: string) {
     text: "Reset your password with the token below: " + token,
   };
 
-  console.log(options);
-
   transporter.sendMail(options, function (err, info) {
     if (err) {
       console.log(err);
       return;
     }
-    console.log("Email sent: " + info.response);
   });
 }
 

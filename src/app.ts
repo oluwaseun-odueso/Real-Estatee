@@ -32,11 +32,4 @@ app.get('/logout', (req, res) => {
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
-// mail("backendseun@gmail.com")
-//   .then((res) => {
-//     console.log("email sent")
-//     console.log(res);
-//   })
-//   .catch((err) => console.log(err));
-
 module.exports = app;
