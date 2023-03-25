@@ -24,7 +24,7 @@ import {
 
 import fs from 'fs';
 import util from 'util';
-import { uploadFile } from '../images/s3';
+import { mail } from '../util/mail';
 const unlinkFile = util.promisify(fs.unlink)
 
 export async function signUpSeller (req: Request, res: Response) {
@@ -221,13 +221,13 @@ export async function updateSellerPassword (req: Request, res: Response) {
         const {current_password, new_password} = req.body;
         const collectedSellerPassword = await retrieveSellerHashedPassword(req.seller.email)
         if (await confirmSellerRetrievedPassword(current_password, collectedSellerPassword) !== true) {
-            res.status(400).send({ success: false, message: "Current password is incorrect"})
+            res.status(400).json({ success: false, message: "Current password is incorrect"})
             return;
         };
 
         const new_hashed_password = await hashPassword(new_password);
         await updatePassword(req.seller.id, new_hashed_password)
-        res.status(200).send({
+        res.status(200).json({
             success: true,
             message: 'Your password has been updated!', 
         });
@@ -240,30 +240,19 @@ export async function updateSellerPassword (req: Request, res: Response) {
     };
 };
 
-export async function uploadSellerImage (req: Request, res: Response) {
+export async function resetSellerPassword (req: Request, res: Response) {
     try {
-        if (!req.file) {
-            res.status(400).send({message: "Please select an image"});
-            // throw new Error ("Please select an image");
-            return;
-        }
-
-        const file: any = req.file
-        console.log(file)
-        const result = await uploadFile(file.buffer)
-        console.log(result)
-        await unlinkFile(file.path)
-        await saveSellerImageKey(req.seller.id, result.Location)
-
+        const buyer = await getSellerById(req.seller.id)
+        await mail(buyer.email)
         res.status(200).send({
             success: true,
-            message: "Profile picture uploaded successfully"
-        })
+            message: "A reset token has been sent to your registered email"
+        });
     } catch (error: any) {
-        res.status(500).send({
+        return res.status(500).json({
             success: false,
-            message: 'Could not upload photo',
+            message: 'Could not process reset password',
             error: error.message
-        })
+        });
     }
 }

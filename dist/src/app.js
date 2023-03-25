@@ -7,7 +7,6 @@ const express_1 = __importDefault(require("express"));
 const seller_1 = __importDefault(require("./routes/seller"));
 const property_1 = __importDefault(require("./routes/property"));
 const buyer_1 = __importDefault(require("./routes/buyer"));
-const controller_1 = __importDefault(require("./images/controller"));
 const cors_1 = __importDefault(require("cors"));
 require('dotenv').config();
 const PORT = process.env.PORT || 5000;
@@ -20,11 +19,8 @@ app.use((0, cors_1.default)({
 app.use('/seller', seller_1.default);
 app.use('/property', property_1.default);
 app.use('/buyer', buyer_1.default);
-app.use('/image', controller_1.default);
 app.get('/', (req, res) => {
     res.status(200).send({ success: true, message: " Official Real Estate Page" });
-});
-app.get('/logout', (req, res) => {
 });
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 module.exports = app;

@@ -3,14 +3,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.uploadSellerImage = exports.updateSellerPassword = exports.deleteAccount = exports.getSellerAccount = exports.updateSellerAccount = exports.loginSeller = exports.signUpSeller = void 0;
+exports.resetSellerPassword = exports.updateSellerPassword = exports.deleteAccount = exports.getSellerAccount = exports.updateSellerAccount = exports.loginSeller = exports.signUpSeller = void 0;
 const express_validator_1 = require("express-validator");
 const sellerAuth_1 = require("../auth/sellerAuth");
 const addressFunctions_1 = require("../functions/addressFunctions");
 const sellerFunctions_1 = require("../functions/sellerFunctions");
 const fs_1 = __importDefault(require("fs"));
 const util_1 = __importDefault(require("util"));
-const s3_1 = require("../images/s3");
+const mail_1 = require("../util/mail");
 const unlinkFile = util_1.default.promisify(fs_1.default.unlink);
 async function signUpSeller(req, res) {
     const errors = (0, express_validator_1.validationResult)(req);
@@ -220,13 +220,13 @@ async function updateSellerPassword(req, res) {
         const { current_password, new_password } = req.body;
         const collectedSellerPassword = await (0, sellerFunctions_1.retrieveSellerHashedPassword)(req.seller.email);
         if (await (0, sellerFunctions_1.confirmSellerRetrievedPassword)(current_password, collectedSellerPassword) !== true) {
-            res.status(400).send({ success: false, message: "Current password is incorrect" });
+            res.status(400).json({ success: false, message: "Current password is incorrect" });
             return;
         }
         ;
         const new_hashed_password = await (0, sellerFunctions_1.hashPassword)(new_password);
         await (0, sellerFunctions_1.updatePassword)(req.seller.id, new_hashed_password);
-        res.status(200).send({
+        res.status(200).json({
             success: true,
             message: 'Your password has been updated!',
         });
@@ -242,30 +242,21 @@ async function updateSellerPassword(req, res) {
 }
 exports.updateSellerPassword = updateSellerPassword;
 ;
-async function uploadSellerImage(req, res) {
+async function resetSellerPassword(req, res) {
     try {
-        if (!req.file) {
-            res.status(400).send({ message: "Please select an image" });
-            // throw new Error ("Please select an image");
-            return;
-        }
-        const file = req.file;
-        console.log(file);
-        const result = await (0, s3_1.uploadFile)(file.buffer);
-        console.log(result);
-        await unlinkFile(file.path);
-        await (0, sellerFunctions_1.saveSellerImageKey)(req.seller.id, result.Location);
+        const buyer = await (0, sellerFunctions_1.getSellerById)(req.seller.id);
+        await (0, mail_1.mail)(buyer.email);
         res.status(200).send({
             success: true,
-            message: "Profile picture uploaded successfully"
+            message: "A reset token has been sent to your registered email"
         });
     }
     catch (error) {
-        res.status(500).send({
+        return res.status(500).json({
             success: false,
-            message: 'Could not upload photo',
+            message: 'Could not process reset password',
             error: error.message
         });
     }
 }
-exports.uploadSellerImage = uploadSellerImage;
+exports.resetSellerPassword = resetSellerPassword;

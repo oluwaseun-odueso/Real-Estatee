@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resetPassword = exports.deleteBuyerAccount = exports.getBuyerAccount = exports.updateBuyerPassword = exports.updateBuyerAccount = exports.loginBuyer = exports.signUpBuyer = void 0;
+exports.resetBuyerPassword = exports.deleteBuyerAccount = exports.getBuyerAccount = exports.updateBuyerPassword = exports.updateBuyerAccount = exports.loginBuyer = exports.signUpBuyer = void 0;
 const express_validator_1 = require("express-validator");
 const buyerAuth_1 = require("../auth/buyerAuth");
 const addressFunctions_1 = require("../functions/addressFunctions");
@@ -248,7 +248,7 @@ async function deleteBuyerAccount(req, res) {
 }
 exports.deleteBuyerAccount = deleteBuyerAccount;
 ;
-async function resetPassword(req, res) {
+async function resetBuyerPassword(req, res) {
     try {
         const buyer = await (0, buyerFunctions_1.getBuyerById)(req.buyer.id);
         await (0, mail_1.mail)(buyer.email);
@@ -260,9 +260,11 @@ async function resetPassword(req, res) {
     catch (error) {
         return res.status(500).json({
             success: false,
-            message: 'Could not process rest password',
+            message: 'Could not process reset password',
             error: error.message
         });
     }
+    ;
 }
-exports.resetPassword = resetPassword;
+exports.resetBuyerPassword = resetBuyerPassword;
+;

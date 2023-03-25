@@ -243,7 +243,7 @@ export async function deleteBuyerAccount (req: Request, res: Response) {
     };
 };
 
-export async function resetPassword (req: Request, res: Response) {
+export async function resetBuyerPassword (req: Request, res: Response) {
     try {
         const buyer = await getBuyerById(req.buyer.id)
         await mail(buyer.email)
@@ -254,8 +254,8 @@ export async function resetPassword (req: Request, res: Response) {
     } catch (error: any) {
         return res.status(500).json({
             success: false,
-            message: 'Could not process rest password',
+            message: 'Could not process reset password',
             error: error.message
         });
-    }
-}
+    };
+};

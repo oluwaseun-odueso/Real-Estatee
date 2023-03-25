@@ -5,7 +5,7 @@ import {
     deleteBuyerAccount,
     getBuyerAccount,
     loginBuyer,
-    resetPassword,
+    resetBuyerPassword,
     signUpBuyer, 
     updateBuyerAccount,
     updateBuyerPassword
@@ -19,11 +19,11 @@ router.post(
     .isLength({min: 8})
     .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/),
     signUpBuyer);
-router.post('/login', body('email').isEmail(), loginBuyer)
-router.put('/update_account', verifyBuyerToken, updateBuyerAccount)
-router.get('/get_account', verifyBuyerToken, getBuyerAccount)
-router.delete('/delete_account', verifyBuyerToken, deleteBuyerAccount)
-router.put('/update_password', verifyBuyerToken, updateBuyerPassword)
-router.post('/reset_password', verifyBuyerToken, resetPassword)
+router.post('/login', body('email').isEmail(), loginBuyer);
+router.put('/update_account', verifyBuyerToken, updateBuyerAccount);
+router.get('/get_account', verifyBuyerToken, getBuyerAccount);
+router.delete('/delete_account', verifyBuyerToken, deleteBuyerAccount);
+router.put('/update_password', verifyBuyerToken, updateBuyerPassword);
+router.post('/reset_password', verifyBuyerToken, resetBuyerPassword);
 
 export default router;
