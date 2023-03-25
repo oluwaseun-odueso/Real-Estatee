@@ -2,6 +2,7 @@ import express, { Application, Request, Response, NextFunction} from 'express';
 import sellerRoutes from './routes/seller';
 import propertyRoutes from './routes/property';
 import buyerRoutes from './routes/buyer'
+import imageRoutes from './image/config'
 import cors from 'cors'
 require('dotenv').config();
 
@@ -18,6 +19,7 @@ app.use(
 app.use('/seller', sellerRoutes);
 app.use('/property', propertyRoutes);
 app.use('/buyer', buyerRoutes)
+app.use('/image', imageRoutes)
 
 app.get('/', (req: Request, res: Response) => {
     res.status(200).send({success: true, message: " Official Real Estate Page"});
