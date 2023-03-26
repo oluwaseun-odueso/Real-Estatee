@@ -6,6 +6,7 @@ import {
     deleteAccount,
     getSellerAccount,
     loginSeller, 
+    resetSellerPassword, 
     signUpSeller, 
     updateSellerAccount,
     updateSellerPassword,
@@ -25,6 +26,6 @@ router.put('/update_account', verifySellerToken, updateSellerAccount);
 router.get('/get_account', verifySellerToken, getSellerAccount);
 router.delete('/delete_account', verifySellerToken, deleteAccount);
 router.put('/update_password', verifySellerToken, updateSellerPassword);
-router.post('/reset_password', verifySellerToken)
+router.post('/reset_password', verifySellerToken, resetSellerPassword)
 
 export default router;

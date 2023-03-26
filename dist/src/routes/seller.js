@@ -16,5 +16,5 @@ router.put('/update_account', sellerAuth_1.verifySellerToken, seller_1.updateSel
 router.get('/get_account', sellerAuth_1.verifySellerToken, seller_1.getSellerAccount);
 router.delete('/delete_account', sellerAuth_1.verifySellerToken, seller_1.deleteAccount);
 router.put('/update_password', sellerAuth_1.verifySellerToken, seller_1.updateSellerPassword);
-router.post('/reset_password', sellerAuth_1.verifySellerToken);
+router.post('/reset_password', sellerAuth_1.verifySellerToken, seller_1.resetSellerPassword);
 exports.default = router;
