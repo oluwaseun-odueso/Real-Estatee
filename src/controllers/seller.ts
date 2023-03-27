@@ -19,7 +19,8 @@ import {
     updateSellerAccountDetails,
     deleteSellerAccount,
     saveSellerImageUrlAndKey,
-    updatePassword
+    updatePassword,
+    deleteSellerImage
 } from '../functions/sellerFunctions'
 import { mail } from '../util/mail';
 import { s3 } from "../image.config"
@@ -333,6 +334,7 @@ export async function deleteImage (req: Request, res: Response) {
             success: true, 
             message: 'Image deleted.' 
         });
+        await deleteSellerImage(req.seller.id)
     } catch (error: any) {
         return res.status(500).json({ 
             success: false, 

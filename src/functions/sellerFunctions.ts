@@ -171,3 +171,14 @@ export async function saveSellerImageUrlAndKey(id: number, image_key: string, im
         throw new Error(`Error saving seller's profile photo image url and key: ${error}`)
     };
 };
+
+export async function deleteSellerImage(id: number) {
+    try {
+        const updated = await Seller.update({image_key: null, image_url: null}, {
+            where: { id }
+        })
+        return updated
+    } catch (error) {
+        throw new Error(`Error deleting seller's image: ${error}`)
+    };
+};

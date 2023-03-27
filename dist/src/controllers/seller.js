@@ -339,6 +339,7 @@ async function deleteImage(req, res) {
             success: true,
             message: 'Image deleted.'
         });
+        await (0, sellerFunctions_1.deleteSellerImage)(req.seller.id);
     }
     catch (error) {
         return res.status(500).json({
