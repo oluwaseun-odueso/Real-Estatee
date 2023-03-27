@@ -277,9 +277,17 @@ export async function uploadImage (req: Request, res: Response) {
         };
 
         const result: any = await s3.upload(uploadParams).promise();
-        res.json({ message: "Profile picture uploaded", url: result.Location});
-    } catch (err) {
-        res.status(500).json({ error: 'Error uploading Profile picture' });
+        res.json({
+            success: true, 
+            message: "Profile picture uploaded", 
+            url: result.Location
+        });
+    } catch (error: any) {
+        return res.status(500).json({ 
+            success: false, 
+            message: 'Error uploading image', 
+            error: error.message
+        });
     };
 };
 
@@ -300,8 +308,34 @@ export async function getImage (req: Request, res: Response) {
 
         // Return the image
         res.send(imageBuffer);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Unable to get image.' });
+    } catch (error: any) {
+        return res.status(500).json({ 
+            success: false, 
+            message: 'Unable to get image',
+            error: error.message
+        });
+    };
+};
+
+export async function deleteImage (req: Request, res: Response) {
+    const filename = req.params.filename;
+    try {
+        // Delete the image from S3
+        const deleteParams = {
+            Bucket: process.env.AWS_BUCKET_NAME!,
+            Key: filename,
+        };
+
+        await s3.deleteObject(deleteParams).promise();
+        res.json({ 
+            success: true, 
+            message: 'Image deleted.' 
+        });
+    } catch (error: any) {
+        return res.status(500).json({ 
+            success: false, 
+            message: 'Unable to delete image',
+            error: error.message
+        });    
     };
 };

@@ -4,6 +4,7 @@ import { verifySellerToken } from '../auth/sellerAuth';
 
 import { 
     deleteAccount,
+    deleteImage,
     getImage,
     getSellerAccount,
     loginSeller, 
@@ -31,6 +32,7 @@ router.delete('/delete_account', verifySellerToken, deleteAccount);
 router.put('/update_password', verifySellerToken, updateSellerPassword);
 router.post('/upload_image', verifySellerToken, upload.single('image'), uploadImage)
 router.get('/get_image/:filename', getImage)
+router.delete('/delete_image/:filename', verifySellerToken, deleteImage)
 router.post('/reset_password', verifySellerToken, resetSellerPassword)
 
 export default router;

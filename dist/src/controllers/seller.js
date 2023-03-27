@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getImage = exports.uploadImage = exports.resetSellerPassword = exports.updateSellerPassword = exports.deleteAccount = exports.getSellerAccount = exports.updateSellerAccount = exports.loginSeller = exports.signUpSeller = void 0;
+exports.deleteImage = exports.getImage = exports.uploadImage = exports.resetSellerPassword = exports.updateSellerPassword = exports.deleteAccount = exports.getSellerAccount = exports.updateSellerAccount = exports.loginSeller = exports.signUpSeller = void 0;
 const express_validator_1 = require("express-validator");
 const sellerAuth_1 = require("../auth/sellerAuth");
 const addressFunctions_1 = require("../functions/addressFunctions");
@@ -280,10 +280,18 @@ async function uploadImage(req, res) {
             ContentType: contentType,
         };
         const result = await image_config_1.s3.upload(uploadParams).promise();
-        res.json({ message: "Profile picture uploaded", url: result.Location });
+        res.json({
+            success: true,
+            message: "Profile picture uploaded",
+            url: result.Location
+        });
     }
-    catch (err) {
-        res.status(500).json({ error: 'Error uploading Profile picture' });
+    catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Error uploading image',
+            error: error.message
+        });
     }
     ;
 }
@@ -305,11 +313,39 @@ async function getImage(req, res) {
         // Return the image
         res.send(imageBuffer);
     }
-    catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Unable to get image.' });
+    catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Unable to get image',
+            error: error.message
+        });
     }
     ;
 }
 exports.getImage = getImage;
+;
+async function deleteImage(req, res) {
+    const filename = req.params.filename;
+    try {
+        // Delete the image from S3
+        const deleteParams = {
+            Bucket: process.env.AWS_BUCKET_NAME,
+            Key: filename,
+        };
+        await image_config_1.s3.deleteObject(deleteParams).promise();
+        res.json({
+            success: true,
+            message: 'Image deleted.'
+        });
+    }
+    catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Unable to delete image',
+            error: error.message
+        });
+    }
+    ;
+}
+exports.deleteImage = deleteImage;
 ;
