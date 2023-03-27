@@ -21,11 +21,8 @@ import {
     saveSellerImageKey,
     updatePassword
 } from '../functions/sellerFunctions'
-
-import fs from 'fs';
-import util from 'util';
 import { mail } from '../util/mail';
-const unlinkFile = util.promisify(fs.unlink)
+import { s3 } from "../image.config"
 
 export async function signUpSeller (req: Request, res: Response) {
     const errors = validationResult(req)
@@ -254,5 +251,32 @@ export async function resetSellerPassword (req: Request, res: Response) {
             message: 'Could not process reset password',
             error: error.message
         });
+    };
+};
+
+export async function uploadImage (req: Request, res: Response) {
+    const file: any = req.file;
+    if (!file) {
+        res.status(400).json({ error: 'No image uploaded.' });
+        return;
+    }
+    
+    try {
+        // Save the image to S3
+        const filename = `${Date.now()}-${file.originalname}`;
+        const fileStream = file.buffer;
+        const contentType = file.mimetype;
+        const uploadParams = {
+        Bucket: process.env.AWS_BUCKET_NAME!,
+        Key: filename,
+        Body: fileStream,
+        ContentType: contentType,
+        };
+
+        const result: any = await s3.upload(uploadParams).promise();
+        res.json({ message: "Profile picture uploaded", url: result.Location});
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Error uploading Profile picture' });
     }
 }

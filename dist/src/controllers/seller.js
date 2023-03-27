@@ -1,17 +1,12 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resetSellerPassword = exports.updateSellerPassword = exports.deleteAccount = exports.getSellerAccount = exports.updateSellerAccount = exports.loginSeller = exports.signUpSeller = void 0;
+exports.uploadImage = exports.resetSellerPassword = exports.updateSellerPassword = exports.deleteAccount = exports.getSellerAccount = exports.updateSellerAccount = exports.loginSeller = exports.signUpSeller = void 0;
 const express_validator_1 = require("express-validator");
 const sellerAuth_1 = require("../auth/sellerAuth");
 const addressFunctions_1 = require("../functions/addressFunctions");
 const sellerFunctions_1 = require("../functions/sellerFunctions");
-const fs_1 = __importDefault(require("fs"));
-const util_1 = __importDefault(require("util"));
 const mail_1 = require("../util/mail");
-const unlinkFile = util_1.default.promisify(fs_1.default.unlink);
+const image_config_1 = require("../image.config");
 async function signUpSeller(req, res) {
     const errors = (0, express_validator_1.validationResult)(req);
     try {
@@ -258,5 +253,33 @@ async function resetSellerPassword(req, res) {
             error: error.message
         });
     }
+    ;
 }
 exports.resetSellerPassword = resetSellerPassword;
+;
+async function uploadImage(req, res) {
+    const file = req.file;
+    if (!file) {
+        res.status(400).json({ error: 'No image uploaded.' });
+        return;
+    }
+    try {
+        // Save the image to S3
+        const filename = `${Date.now()}-${file.originalname}`;
+        const fileStream = file.buffer;
+        const contentType = file.mimetype;
+        const uploadParams = {
+            Bucket: process.env.AWS_BUCKET_NAME,
+            Key: filename,
+            Body: fileStream,
+            ContentType: contentType,
+        };
+        const result = await image_config_1.s3.upload(uploadParams).promise();
+        res.json({ message: "Profile picture uploaded", url: result.Location });
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Error uploading Profile picture' });
+    }
+}
+exports.uploadImage = uploadImage;

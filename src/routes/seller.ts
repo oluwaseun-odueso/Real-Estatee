@@ -10,7 +10,9 @@ import {
     signUpSeller, 
     updateSellerAccount,
     updateSellerPassword,
+    uploadImage,
 } from '../controllers/seller';
+import { upload } from '../image.config';
 
 const router: Router = express.Router();
 
@@ -26,6 +28,7 @@ router.put('/update_account', verifySellerToken, updateSellerAccount);
 router.get('/get_account', verifySellerToken, getSellerAccount);
 router.delete('/delete_account', verifySellerToken, deleteAccount);
 router.put('/update_password', verifySellerToken, updateSellerPassword);
+router.post('/upload_image', verifySellerToken, upload.single('image'), uploadImage)
 router.post('/reset_password', verifySellerToken, resetSellerPassword)
 
 export default router;
