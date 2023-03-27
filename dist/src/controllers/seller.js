@@ -280,9 +280,11 @@ async function uploadImage(req, res) {
             ContentType: contentType,
         };
         const result = await image_config_1.s3.upload(uploadParams).promise();
+        await (0, sellerFunctions_1.saveSellerImageUrlAndKey)(req.seller.id, result.Key, result.Location);
         res.json({
             success: true,
             message: "Profile picture uploaded",
+            key: result.Key,
             url: result.Location
         });
     }

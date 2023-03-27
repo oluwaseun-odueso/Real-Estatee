@@ -161,13 +161,13 @@ export async function deleteSellerAccount(id: number): Promise<number> {
     };
 };
 
-export async function saveSellerImageKey(id: number, image_key: string) {
+export async function saveSellerImageUrlAndKey(id: number, image_key: string, image_url: string) {
     try {
-        const updated = await Seller.update({image_key}, {
+        const updated = await Seller.update({image_key, image_url}, {
             where: { id }
         })
         return updated
     } catch (error) {
-        throw new Error(`Error saving seller's profile photo: ${error}`)
+        throw new Error(`Error saving seller's profile photo image url and key: ${error}`)
     };
 };

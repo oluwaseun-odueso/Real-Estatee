@@ -18,7 +18,7 @@ import {
     retrieveSellerHashedPassword, 
     updateSellerAccountDetails,
     deleteSellerAccount,
-    saveSellerImageKey,
+    saveSellerImageUrlAndKey,
     updatePassword
 } from '../functions/sellerFunctions'
 import { mail } from '../util/mail';
@@ -277,9 +277,11 @@ export async function uploadImage (req: Request, res: Response) {
         };
 
         const result: any = await s3.upload(uploadParams).promise();
+        await saveSellerImageUrlAndKey(req.seller.id, result.Key, result.Location)
         res.json({
             success: true, 
             message: "Profile picture uploaded", 
+            key: result.Key,
             url: result.Location
         });
     } catch (error: any) {

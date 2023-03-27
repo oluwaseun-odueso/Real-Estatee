@@ -32,7 +32,10 @@ Buyer.init({
         allowNull: false
     },
     image_key: {
-        type: sequelize_1.DataTypes.STRING,
+        type: sequelize_1.DataTypes.STRING
+    },
+    image_url: {
+        type: sequelize_1.DataTypes.STRING
     },
     hashed_password: {
         type: sequelize_1.DataTypes.STRING,
