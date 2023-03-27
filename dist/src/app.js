@@ -9,8 +9,8 @@ const property_1 = __importDefault(require("./routes/property"));
 const buyer_1 = __importDefault(require("./routes/buyer"));
 const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = __importDefault(require("dotenv"));
-const multer_1 = __importDefault(require("multer"));
 const aws_sdk_1 = __importDefault(require("aws-sdk"));
+const multer_1 = __importDefault(require("multer"));
 dotenv_1.default.config();
 const PORT = process.env.PORT || 5000;
 const app = (0, express_1.default)();
@@ -47,7 +47,7 @@ app.post('/upload', upload.single('image'), async (req, res) => {
         return;
     }
     try {
-        // Save the image to S3 or Google Cloud Storage
+        // Save the image to S3
         const filename = `${Date.now()}-${file.originalname}`;
         const fileStream = file.buffer;
         const contentType = file.mimetype;
@@ -57,34 +57,19 @@ app.post('/upload', upload.single('image'), async (req, res) => {
             Body: fileStream,
             ContentType: contentType,
         };
-        await s3.upload(uploadParams).promise();
-        res.json({ filename });
+        const result = await s3.upload(uploadParams).promise();
+        res.json({ url: result.Location });
     }
     catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Unable to upload image.' });
     }
 });
-// app.post('/upload', upload.single('image'), async (req, res) => {
-//     try {
-//       // Upload the file to S3
-//       const file: any = req.file
-//       const result = await uploadToS3(file);
-//       // Return the S3 object key as the response
-//       res.json({ key: result.Key });
-//     } catch (error) {
-//       console.error(error);
-//       res.status(500).json({ message: 'Error uploading file' });
-//     }
-//   });
 app.use('/seller', seller_1.default);
 app.use('/property', property_1.default);
 app.use('/buyer', buyer_1.default);
 app.get('/', (req, res) => {
     res.status(200).send({ success: true, message: " Official Real Estate Page" });
 });
-// app.post('/upload', upload.single('image'), (req: Request, res: Response) => {
-//     res.status(200).send(req.file.location);
-//   });
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 module.exports = app;
