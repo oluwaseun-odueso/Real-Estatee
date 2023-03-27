@@ -23,6 +23,9 @@ import {
 } from '../functions/sellerFunctions'
 import { mail } from '../util/mail';
 import { s3 } from "../image.config"
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 export async function signUpSeller (req: Request, res: Response) {
     const errors = validationResult(req)
@@ -276,7 +279,29 @@ export async function uploadImage (req: Request, res: Response) {
         const result: any = await s3.upload(uploadParams).promise();
         res.json({ message: "Profile picture uploaded", url: result.Location});
     } catch (err) {
-        console.error(err);
         res.status(500).json({ error: 'Error uploading Profile picture' });
-    }
-}
+    };
+};
+
+export async function getImage (req: Request, res: Response) {
+    const filename = req.params.filename;
+    try {
+        // Retrieve the image from S3
+        const downloadParams = {
+        Bucket: process.env.AWS_BUCKET_NAME!,
+        Key: filename,
+        };
+        const objectData = await s3.getObject(downloadParams).promise();
+        const imageBuffer = objectData.Body;
+
+        // Set the Content-Type header to the image's MIME type
+        const contentType = objectData.ContentType;
+        res.set('Content-Type', contentType);
+
+        // Return the image
+        res.send(imageBuffer);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Unable to get image.' });
+    };
+};

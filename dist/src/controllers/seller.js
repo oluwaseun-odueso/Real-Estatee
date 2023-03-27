@@ -1,12 +1,17 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.uploadImage = exports.resetSellerPassword = exports.updateSellerPassword = exports.deleteAccount = exports.getSellerAccount = exports.updateSellerAccount = exports.loginSeller = exports.signUpSeller = void 0;
+exports.getImage = exports.uploadImage = exports.resetSellerPassword = exports.updateSellerPassword = exports.deleteAccount = exports.getSellerAccount = exports.updateSellerAccount = exports.loginSeller = exports.signUpSeller = void 0;
 const express_validator_1 = require("express-validator");
 const sellerAuth_1 = require("../auth/sellerAuth");
 const addressFunctions_1 = require("../functions/addressFunctions");
 const sellerFunctions_1 = require("../functions/sellerFunctions");
 const mail_1 = require("../util/mail");
 const image_config_1 = require("../image.config");
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
 async function signUpSeller(req, res) {
     const errors = (0, express_validator_1.validationResult)(req);
     try {
@@ -278,8 +283,33 @@ async function uploadImage(req, res) {
         res.json({ message: "Profile picture uploaded", url: result.Location });
     }
     catch (err) {
-        console.error(err);
         res.status(500).json({ error: 'Error uploading Profile picture' });
     }
+    ;
 }
 exports.uploadImage = uploadImage;
+;
+async function getImage(req, res) {
+    const filename = req.params.filename;
+    try {
+        // Retrieve the image from S3
+        const downloadParams = {
+            Bucket: process.env.AWS_BUCKET_NAME,
+            Key: filename,
+        };
+        const objectData = await image_config_1.s3.getObject(downloadParams).promise();
+        const imageBuffer = objectData.Body;
+        // Set the Content-Type header to the image's MIME type
+        const contentType = objectData.ContentType;
+        res.set('Content-Type', contentType);
+        // Return the image
+        res.send(imageBuffer);
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Unable to get image.' });
+    }
+    ;
+}
+exports.getImage = getImage;
+;
