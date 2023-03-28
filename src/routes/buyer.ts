@@ -3,6 +3,7 @@ import {body} from 'express-validator'
 import { verifyBuyerToken } from '../auth/buyerAuth';
 import { 
     deleteBuyerAccount,
+    deleteImage,
     getBuyerAccount,
     getImage,
     loginBuyer,
@@ -28,7 +29,8 @@ router.get('/get_account', verifyBuyerToken, getBuyerAccount);
 router.delete('/delete_account', verifyBuyerToken, deleteBuyerAccount);
 router.put('/update_password', verifyBuyerToken, updateBuyerPassword);
 router.post('/upload_image', verifyBuyerToken, upload.single('image'), uploadImage);
-router.get('/get_image/:filename', getImage)
+router.get('/get_image/:filename', getImage);
+router.delete('/delete_image', verifyBuyerToken, deleteImage)
 router.post('/reset_password', verifyBuyerToken, resetBuyerPassword);
 
 export default router;

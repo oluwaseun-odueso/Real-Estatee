@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteAccount = exports.updatePassword = exports.updateBuyerAccountDetails = exports.checkIfEntriesMatch = exports.saveBuyerImageUrlAndKey = exports.getFullBuyerDetails = exports.confirmBuyerRetrievedPassword = exports.retrieveBuyerHashedPassword = exports.getBuyerById = exports.getBuyerByEmail = exports.hashBuyerPassword = exports.checkBuyerPhoneNumber = exports.checkBuyerEmail = exports.createBuyer = void 0;
+exports.deleteBuyerImage = exports.deleteAccount = exports.updatePassword = exports.updateBuyerAccountDetails = exports.checkIfEntriesMatch = exports.saveBuyerImageUrlAndKey = exports.getFullBuyerDetails = exports.confirmBuyerRetrievedPassword = exports.retrieveBuyerHashedPassword = exports.getBuyerImageKey = exports.getBuyerById = exports.getBuyerByEmail = exports.hashBuyerPassword = exports.checkBuyerPhoneNumber = exports.checkBuyerEmail = exports.createBuyer = void 0;
 const buyer_1 = require("../models/buyer");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const addressFunctions_1 = require("./addressFunctions");
@@ -89,6 +89,21 @@ async function getBuyerById(id) {
     ;
 }
 exports.getBuyerById = getBuyerById;
+;
+async function getBuyerImageKey(id) {
+    try {
+        const buyerImageKey = await buyer_1.Buyer.findOne({
+            attributes: ["image_key"],
+            where: { id }
+        });
+        return JSON.parse(JSON.stringify(buyerImageKey)).image_key;
+    }
+    catch (error) {
+        throw new Error(`Error retrieving buyer's image key: ${error}`);
+    }
+    ;
+}
+exports.getBuyerImageKey = getBuyerImageKey;
 ;
 async function retrieveBuyerHashedPassword(email) {
     try {
@@ -189,4 +204,18 @@ async function deleteAccount(id) {
     ;
 }
 exports.deleteAccount = deleteAccount;
+;
+async function deleteBuyerImage(id) {
+    try {
+        const updated = await buyer_1.Buyer.update({ image_key: null, image_url: null }, {
+            where: { id }
+        });
+        return updated;
+    }
+    catch (error) {
+        throw new Error(`Error deleting buyer's image: ${error}`);
+    }
+    ;
+}
+exports.deleteBuyerImage = deleteBuyerImage;
 ;

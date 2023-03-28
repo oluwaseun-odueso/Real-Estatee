@@ -19,5 +19,6 @@ router.delete('/delete_account', buyerAuth_1.verifyBuyerToken, buyer_1.deleteBuy
 router.put('/update_password', buyerAuth_1.verifyBuyerToken, buyer_1.updateBuyerPassword);
 router.post('/upload_image', buyerAuth_1.verifyBuyerToken, image_config_1.upload.single('image'), buyer_1.uploadImage);
 router.get('/get_image/:filename', buyer_1.getImage);
+router.delete('/delete_image', buyerAuth_1.verifyBuyerToken, buyer_1.deleteImage);
 router.post('/reset_password', buyerAuth_1.verifyBuyerToken, buyer_1.resetBuyerPassword);
 exports.default = router;

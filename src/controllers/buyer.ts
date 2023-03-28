@@ -9,8 +9,10 @@ import {
     confirmBuyerRetrievedPassword, 
     createBuyer, 
     deleteAccount, 
+    deleteBuyerImage, 
     getBuyerByEmail, 
     getBuyerById, 
+    getBuyerImageKey, 
     getFullBuyerDetails, 
     hashBuyerPassword,
     retrieveBuyerHashedPassword,
@@ -321,5 +323,37 @@ export async function getImage (req: Request, res: Response) {
             message: 'Unable to get image',
             error: error.message
         });
+    };
+};
+
+export async function deleteImage (req: Request, res: Response) {
+    // const filename = req.params.filename;
+    try {
+        const imageKey = await getBuyerImageKey(req.buyer.id);
+        if ( !imageKey ) {
+            res.status(400).send({
+                success: false,
+                message: "Image does not exist"
+            });
+            return;
+        };
+        // Delete the image from S3
+        const deleteParams = {
+            Bucket: process.env.AWS_BUCKET_NAME!,
+            Key: imageKey,
+        };
+
+        await s3.deleteObject(deleteParams).promise();
+        res.json({ 
+            success: true, 
+            message: 'Image deleted.' 
+        });
+        await deleteBuyerImage(req.buyer.id)
+    } catch (error: any) {
+        return res.status(500).json({ 
+            success: false, 
+            message: 'Unable to delete image',
+            error: error.message
+        });    
     };
 };

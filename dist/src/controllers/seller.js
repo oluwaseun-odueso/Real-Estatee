@@ -330,6 +330,14 @@ async function deleteImage(req, res) {
     // const filename = req.params.filename;
     try {
         const imageKey = await (0, sellerFunctions_1.getSellerImageKey)(req.seller.id);
+        if (!imageKey) {
+            res.status(400).send({
+                success: false,
+                message: "Image does not exist"
+            });
+            return;
+        }
+        ;
         // Delete the image from S3
         const deleteParams = {
             Bucket: process.env.AWS_BUCKET_NAME,

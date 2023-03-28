@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getImage = exports.uploadImage = exports.resetBuyerPassword = exports.deleteBuyerAccount = exports.getBuyerAccount = exports.updateBuyerPassword = exports.updateBuyerAccount = exports.loginBuyer = exports.signUpBuyer = void 0;
+exports.deleteImage = exports.getImage = exports.uploadImage = exports.resetBuyerPassword = exports.deleteBuyerAccount = exports.getBuyerAccount = exports.updateBuyerPassword = exports.updateBuyerAccount = exports.loginBuyer = exports.signUpBuyer = void 0;
 const express_validator_1 = require("express-validator");
 const buyerAuth_1 = require("../auth/buyerAuth");
 const addressFunctions_1 = require("../functions/addressFunctions");
@@ -332,4 +332,39 @@ async function getImage(req, res) {
     ;
 }
 exports.getImage = getImage;
+;
+async function deleteImage(req, res) {
+    // const filename = req.params.filename;
+    try {
+        const imageKey = await (0, buyerFunctions_1.getBuyerImageKey)(req.buyer.id);
+        if (!imageKey) {
+            res.status(400).send({
+                success: false,
+                message: "Image does not exist"
+            });
+            return;
+        }
+        ;
+        // Delete the image from S3
+        const deleteParams = {
+            Bucket: process.env.AWS_BUCKET_NAME,
+            Key: imageKey,
+        };
+        await image_config_1.s3.deleteObject(deleteParams).promise();
+        res.json({
+            success: true,
+            message: 'Image deleted.'
+        });
+        await (0, buyerFunctions_1.deleteBuyerImage)(req.buyer.id);
+    }
+    catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Unable to delete image',
+            error: error.message
+        });
+    }
+    ;
+}
+exports.deleteImage = deleteImage;
 ;

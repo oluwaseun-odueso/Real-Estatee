@@ -78,6 +78,17 @@ export async function getBuyerById(id: number): Promise<CustomBuyer> {
     };
 };
 
+export async function getBuyerImageKey (id: number): Promise<string> {
+    try {
+        const buyerImageKey = await Buyer.findOne({
+            attributes: [ "image_key"],
+            where: { id }
+        })
+        return JSON.parse(JSON.stringify(buyerImageKey)).image_key;
+    } catch (error) {
+        throw new Error(`Error retrieving buyer's image key: ${error}`)
+    };
+};
 
 export async function retrieveBuyerHashedPassword(email: string): Promise<string> {
     try {
@@ -157,5 +168,16 @@ export async function deleteAccount(id: number): Promise<number> {
         return deletedAccount;
     } catch (error) {
         throw new Error(`Error deleting buyer's account: ${error}`)
+    };
+};
+
+export async function deleteBuyerImage(id: number) {
+    try {
+        const updated = await Buyer.update({image_key: null, image_url: null}, {
+            where: { id }
+        })
+        return updated
+    } catch (error) {
+        throw new Error(`Error deleting buyer's image: ${error}`)
     };
 };
