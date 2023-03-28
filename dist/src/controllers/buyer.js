@@ -1,10 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resetBuyerPassword = exports.deleteBuyerAccount = exports.getBuyerAccount = exports.updateBuyerPassword = exports.updateBuyerAccount = exports.loginBuyer = exports.signUpBuyer = void 0;
+exports.uploadImage = exports.resetBuyerPassword = exports.deleteBuyerAccount = exports.getBuyerAccount = exports.updateBuyerPassword = exports.updateBuyerAccount = exports.loginBuyer = exports.signUpBuyer = void 0;
 const express_validator_1 = require("express-validator");
 const buyerAuth_1 = require("../auth/buyerAuth");
 const addressFunctions_1 = require("../functions/addressFunctions");
 const buyerFunctions_1 = require("../functions/buyerFunctions");
+const image_config_1 = require("../image.config");
 const mail_1 = require("../util/mail");
 async function signUpBuyer(req, res) {
     const errors = (0, express_validator_1.validationResult)(req);
@@ -267,4 +268,41 @@ async function resetBuyerPassword(req, res) {
     ;
 }
 exports.resetBuyerPassword = resetBuyerPassword;
+;
+async function uploadImage(req, res) {
+    const file = req.file;
+    if (!file) {
+        res.status(400).json({ error: 'No image uploaded.' });
+        return;
+    }
+    try {
+        // Save the image to S3
+        const filename = `${Date.now()}-${file.originalname}`;
+        const fileStream = file.buffer;
+        const contentType = file.mimetype;
+        const uploadParams = {
+            Bucket: process.env.AWS_BUCKET_NAME,
+            Key: filename,
+            Body: fileStream,
+            ContentType: contentType,
+        };
+        const result = await image_config_1.s3.upload(uploadParams).promise();
+        await (0, buyerFunctions_1.saveBuyerImageUrlAndKey)(req.buyer.id, result.Key, result.Location);
+        res.json({
+            success: true,
+            message: "Profile picture uploaded",
+            key: result.Key,
+            url: result.Location
+        });
+    }
+    catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Error uploading image',
+            error: error.message
+        });
+    }
+    ;
+}
+exports.uploadImage = uploadImage;
 ;

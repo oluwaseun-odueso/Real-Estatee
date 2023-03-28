@@ -14,9 +14,11 @@ import {
     getFullBuyerDetails, 
     hashBuyerPassword,
     retrieveBuyerHashedPassword,
+    saveBuyerImageUrlAndKey,
     updateBuyerAccountDetails,
     updatePassword
 } from '../functions/buyerFunctions';
+import { s3 } from '../image.config';
 import { mail } from '../util/mail';
 
 export async function signUpBuyer (req: Request, res: Response) {
@@ -255,6 +257,42 @@ export async function resetBuyerPassword (req: Request, res: Response) {
         return res.status(500).json({
             success: false,
             message: 'Could not process reset password',
+            error: error.message
+        });
+    };
+};
+
+export async function uploadImage (req: Request, res: Response) {
+    const file: any = req.file;
+    if (!file) {
+        res.status(400).json({ error: 'No image uploaded.' });
+        return;
+    }
+    
+    try {
+        // Save the image to S3
+        const filename = `${Date.now()}-${file.originalname}`;
+        const fileStream = file.buffer;
+        const contentType = file.mimetype;
+        const uploadParams = {
+        Bucket: process.env.AWS_BUCKET_NAME!,
+        Key: filename,
+        Body: fileStream,
+        ContentType: contentType,
+        };
+
+        const result: any = await s3.upload(uploadParams).promise();
+        await saveBuyerImageUrlAndKey(req.buyer.id, result.Key, result.Location)
+        res.json({
+            success: true, 
+            message: "Profile picture uploaded", 
+            key: result.Key,
+            url: result.Location
+        });
+    } catch (error: any) {
+        return res.status(500).json({ 
+            success: false, 
+            message: 'Error uploading image', 
             error: error.message
         });
     };

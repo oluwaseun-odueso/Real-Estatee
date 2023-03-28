@@ -112,6 +112,17 @@ export async function getFullBuyerDetails(buyer_id: number, buyer_address_id: nu
     };
 };
 
+export async function saveBuyerImageUrlAndKey(id: number, image_key: string, image_url: string) {
+    try {
+        const updated = await Buyer.update({image_key, image_url}, {
+            where: { id }
+        })
+        return updated
+    } catch (error) {
+        throw new Error(`Error saving buyer's profile photo image url and key: ${error}`)
+    };
+};
+
 export function checkIfEntriesMatch(firstValue: string, secondValue: string): boolean {
     return firstValue === secondValue;
 };

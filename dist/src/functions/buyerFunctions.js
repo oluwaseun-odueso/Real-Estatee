@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteAccount = exports.updatePassword = exports.updateBuyerAccountDetails = exports.checkIfEntriesMatch = exports.getFullBuyerDetails = exports.confirmBuyerRetrievedPassword = exports.retrieveBuyerHashedPassword = exports.getBuyerById = exports.getBuyerByEmail = exports.hashBuyerPassword = exports.checkBuyerPhoneNumber = exports.checkBuyerEmail = exports.createBuyer = void 0;
+exports.deleteAccount = exports.updatePassword = exports.updateBuyerAccountDetails = exports.checkIfEntriesMatch = exports.saveBuyerImageUrlAndKey = exports.getFullBuyerDetails = exports.confirmBuyerRetrievedPassword = exports.retrieveBuyerHashedPassword = exports.getBuyerById = exports.getBuyerByEmail = exports.hashBuyerPassword = exports.checkBuyerPhoneNumber = exports.checkBuyerEmail = exports.createBuyer = void 0;
 const buyer_1 = require("../models/buyer");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const addressFunctions_1 = require("./addressFunctions");
@@ -130,6 +130,20 @@ async function getFullBuyerDetails(buyer_id, buyer_address_id) {
     ;
 }
 exports.getFullBuyerDetails = getFullBuyerDetails;
+;
+async function saveBuyerImageUrlAndKey(id, image_key, image_url) {
+    try {
+        const updated = await buyer_1.Buyer.update({ image_key, image_url }, {
+            where: { id }
+        });
+        return updated;
+    }
+    catch (error) {
+        throw new Error(`Error saving buyer's profile photo image url and key: ${error}`);
+    }
+    ;
+}
+exports.saveBuyerImageUrlAndKey = saveBuyerImageUrlAndKey;
 ;
 function checkIfEntriesMatch(firstValue, secondValue) {
     return firstValue === secondValue;
