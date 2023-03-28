@@ -297,3 +297,29 @@ export async function uploadImage (req: Request, res: Response) {
         });
     };
 };
+
+export async function getImage (req: Request, res: Response) {
+    const imageKey = req.params.filename;
+    try {
+        // Retrieve the image from S3
+        const downloadParams = {
+        Bucket: process.env.AWS_BUCKET_NAME!,
+        Key: imageKey,
+        };
+        const objectData = await s3.getObject(downloadParams).promise();
+        const imageBuffer = objectData.Body;
+
+        // Set the Content-Type header to the image's MIME type
+        const contentType = objectData.ContentType;
+        res.set('Content-Type', contentType);
+
+        // Return the image
+        res.send(imageBuffer);
+    } catch (error: any) {
+        return res.status(500).json({ 
+            success: false, 
+            message: 'Unable to get image',
+            error: error.message
+        });
+    };
+};

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.uploadImage = exports.resetBuyerPassword = exports.deleteBuyerAccount = exports.getBuyerAccount = exports.updateBuyerPassword = exports.updateBuyerAccount = exports.loginBuyer = exports.signUpBuyer = void 0;
+exports.getImage = exports.uploadImage = exports.resetBuyerPassword = exports.deleteBuyerAccount = exports.getBuyerAccount = exports.updateBuyerPassword = exports.updateBuyerAccount = exports.loginBuyer = exports.signUpBuyer = void 0;
 const express_validator_1 = require("express-validator");
 const buyerAuth_1 = require("../auth/buyerAuth");
 const addressFunctions_1 = require("../functions/addressFunctions");
@@ -305,4 +305,31 @@ async function uploadImage(req, res) {
     ;
 }
 exports.uploadImage = uploadImage;
+;
+async function getImage(req, res) {
+    const imageKey = req.params.filename;
+    try {
+        // Retrieve the image from S3
+        const downloadParams = {
+            Bucket: process.env.AWS_BUCKET_NAME,
+            Key: imageKey,
+        };
+        const objectData = await image_config_1.s3.getObject(downloadParams).promise();
+        const imageBuffer = objectData.Body;
+        // Set the Content-Type header to the image's MIME type
+        const contentType = objectData.ContentType;
+        res.set('Content-Type', contentType);
+        // Return the image
+        res.send(imageBuffer);
+    }
+    catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Unable to get image',
+            error: error.message
+        });
+    }
+    ;
+}
+exports.getImage = getImage;
 ;
