@@ -9,14 +9,19 @@ import {
     confirmBuyerRetrievedPassword, 
     createBuyer, 
     deleteAccount, 
+    deleteBuyerImage, 
     getBuyerByEmail, 
     getBuyerById, 
+    getBuyerImageKey, 
     getFullBuyerDetails, 
     hashBuyerPassword,
     retrieveBuyerHashedPassword,
+    saveBuyerImageUrlAndKey,
     updateBuyerAccountDetails,
     updatePassword
 } from '../functions/buyerFunctions';
+import { s3 } from '../image.config';
+import { mail } from '../util/mail';
 
 export async function signUpBuyer (req: Request, res: Response) {
     const errors = validationResult(req)
@@ -70,6 +75,7 @@ export async function signUpBuyer (req: Request, res: Response) {
 };
 
 export async function loginBuyer (req: Request, res: Response) {
+    const errors = validationResult(req)
     try {
         if (!req.body.email || !req.body.password) {
             res.status(400).json({ 
@@ -79,6 +85,13 @@ export async function loginBuyer (req: Request, res: Response) {
             return;
         };
         const {email, password} = req.body;
+
+        if (!errors.isEmpty()) {
+            const error = errors.array()[0];
+            if (error.param === 'email') {
+                return res.status(400).json({success: false, message: 'Invalid email address. Please try again.'});
+            }
+        }
 
         const buyerDetails = await getBuyerByEmail(email);
         if (!buyerDetails) {
@@ -119,7 +132,7 @@ export async function updateBuyerAccount(req: Request, res: Response) {
             });
             return;
         };
-
+2
         const {first_name, last_name, email, phone_number, street, city, state, country, postal_code} = req.body;
         const buyer = await getBuyerById(req.buyer.id)
         if ( await checkBuyerEmail (email) && ! checkIfEntriesMatch(buyer.email, email)) {
@@ -231,5 +244,116 @@ export async function deleteBuyerAccount (req: Request, res: Response) {
             message: 'Could not delete your account',
             error: error.message
         });
+    };
+};
+
+export async function resetBuyerPassword (req: Request, res: Response) {
+    try {
+        const buyer = await getBuyerById(req.buyer.id)
+        await mail(buyer.email)
+        res.status(200).send({
+            success: true,
+            message: "A reset token has been sent to your registered email"
+        });
+    } catch (error: any) {
+        return res.status(500).json({
+            success: false,
+            message: 'Could not process reset password',
+            error: error.message
+        });
+    };
+};
+
+export async function uploadImage (req: Request, res: Response) {
+    const file: any = req.file;
+    if (!file) {
+        res.status(400).json({ error: 'No image uploaded.' });
+        return;
+    }
+    
+    try {
+        // Save the image to S3
+        const filename = `${Date.now()}-${file.originalname}`;
+        const fileStream = file.buffer;
+        const contentType = file.mimetype;
+        const uploadParams = {
+        Bucket: process.env.AWS_BUCKET_NAME!,
+        Key: filename,
+        Body: fileStream,
+        ContentType: contentType,
+        };
+
+        const result: any = await s3.upload(uploadParams).promise();
+        await saveBuyerImageUrlAndKey(req.buyer.id, result.Key, result.Location)
+        res.json({
+            success: true, 
+            message: "Profile picture uploaded", 
+            key: result.Key,
+            url: result.Location
+        });
+    } catch (error: any) {
+        return res.status(500).json({ 
+            success: false, 
+            message: 'Error uploading image', 
+            error: error.message
+        });
+    };
+};
+
+export async function getImage (req: Request, res: Response) {
+    const imageKey = req.params.filename;
+    try {
+        // Retrieve the image from S3
+        const downloadParams = {
+        Bucket: process.env.AWS_BUCKET_NAME!,
+        Key: imageKey,
+        };
+        const objectData = await s3.getObject(downloadParams).promise();
+        const imageBuffer = objectData.Body;
+
+        // Set the Content-Type header to the image's MIME type
+        const contentType = objectData.ContentType;
+        res.set('Content-Type', contentType);
+
+        // Return the image
+        res.send(imageBuffer);
+    } catch (error: any) {
+        return res.status(500).json({ 
+            success: false, 
+            message: 'Unable to get image',
+            error: error.message
+        });
+    };
+};
+
+export async function deleteImage (req: Request, res: Response) {
+    // const filename = req.params.filename;
+    try {
+        const imageKey = await getBuyerImageKey(req.buyer.id);
+        if ( !imageKey ) {
+            res.status(400).send({
+                success: false,
+                message: "Image does not exist"
+            });
+            return;
+        };
+        // Delete the image from S3
+        const deleteParams = {
+            Bucket: process.env.AWS_BUCKET_NAME!,
+            Key: imageKey,
+        };
+
+        await s3.deleteObject(deleteParams).promise();
+        res.json({ 
+            success: true, 
+            message: 'Image deleted.' 
+        });
+        await deleteBuyerImage(req.buyer.id)
+    } catch (error: any) {
+        return res.status(500).json({ 
+            success: false, 
+            message: 'Unable to delete image',
+            error: error.message
+        });    
     };
 };

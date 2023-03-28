@@ -3,15 +3,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.uploadSellerImage = exports.updateSellerPassword = exports.deleteAccount = exports.getSellerAccount = exports.updateSellerAccount = exports.loginSeller = exports.signUpSeller = void 0;
+exports.deleteImage = exports.getImage = exports.uploadImage = exports.resetSellerPassword = exports.updateSellerPassword = exports.deleteAccount = exports.getSellerAccount = exports.updateSellerAccount = exports.loginSeller = exports.signUpSeller = void 0;
 const express_validator_1 = require("express-validator");
 const sellerAuth_1 = require("../auth/sellerAuth");
 const addressFunctions_1 = require("../functions/addressFunctions");
 const sellerFunctions_1 = require("../functions/sellerFunctions");
-const fs_1 = __importDefault(require("fs"));
-const util_1 = __importDefault(require("util"));
-const s3_1 = require("../images/s3");
-const unlinkFile = util_1.default.promisify(fs_1.default.unlink);
+const mail_1 = require("../util/mail");
+const image_config_1 = require("../image.config");
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
 async function signUpSeller(req, res) {
     const errors = (0, express_validator_1.validationResult)(req);
     try {
@@ -220,13 +220,13 @@ async function updateSellerPassword(req, res) {
         const { current_password, new_password } = req.body;
         const collectedSellerPassword = await (0, sellerFunctions_1.retrieveSellerHashedPassword)(req.seller.email);
         if (await (0, sellerFunctions_1.confirmSellerRetrievedPassword)(current_password, collectedSellerPassword) !== true) {
-            res.status(400).send({ success: false, message: "Current password is incorrect" });
+            res.status(400).json({ success: false, message: "Current password is incorrect" });
             return;
         }
         ;
         const new_hashed_password = await (0, sellerFunctions_1.hashPassword)(new_password);
         await (0, sellerFunctions_1.updatePassword)(req.seller.id, new_hashed_password);
-        res.status(200).send({
+        res.status(200).json({
             success: true,
             message: 'Your password has been updated!',
         });
@@ -242,30 +242,122 @@ async function updateSellerPassword(req, res) {
 }
 exports.updateSellerPassword = updateSellerPassword;
 ;
-async function uploadSellerImage(req, res) {
+async function resetSellerPassword(req, res) {
     try {
-        if (!req.file) {
-            res.status(400).send({ message: "Please select an image" });
-            // throw new Error ("Please select an image");
-            return;
-        }
-        const file = req.file;
-        console.log(file);
-        const result = await (0, s3_1.uploadFile)(file.buffer);
-        console.log(result);
-        await unlinkFile(file.path);
-        await (0, sellerFunctions_1.saveSellerImageKey)(req.seller.id, result.Location);
+        const buyer = await (0, sellerFunctions_1.getSellerById)(req.seller.id);
+        await (0, mail_1.mail)(buyer.email);
         res.status(200).send({
             success: true,
-            message: "Profile picture uploaded successfully"
+            message: "A reset token has been sent to your registered email"
         });
     }
     catch (error) {
-        res.status(500).send({
+        return res.status(500).json({
             success: false,
-            message: 'Could not upload photo',
+            message: 'Could not process reset password',
             error: error.message
         });
     }
+    ;
 }
-exports.uploadSellerImage = uploadSellerImage;
+exports.resetSellerPassword = resetSellerPassword;
+;
+async function uploadImage(req, res) {
+    const file = req.file;
+    if (!file) {
+        res.status(400).json({ error: 'No image uploaded.' });
+        return;
+    }
+    try {
+        // Save the image to S3
+        const filename = `${Date.now()}-${file.originalname}`;
+        const fileStream = file.buffer;
+        const contentType = file.mimetype;
+        const uploadParams = {
+            Bucket: process.env.AWS_BUCKET_NAME,
+            Key: filename,
+            Body: fileStream,
+            ContentType: contentType,
+        };
+        const result = await image_config_1.s3.upload(uploadParams).promise();
+        await (0, sellerFunctions_1.saveSellerImageUrlAndKey)(req.seller.id, result.Key, result.Location);
+        res.json({
+            success: true,
+            message: "Profile picture uploaded",
+            key: result.Key,
+            url: result.Location
+        });
+    }
+    catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Error uploading image',
+            error: error.message
+        });
+    }
+    ;
+}
+exports.uploadImage = uploadImage;
+;
+async function getImage(req, res) {
+    const imageKey = req.params.filename;
+    try {
+        // Retrieve the image from S3
+        const downloadParams = {
+            Bucket: process.env.AWS_BUCKET_NAME,
+            Key: imageKey,
+        };
+        const objectData = await image_config_1.s3.getObject(downloadParams).promise();
+        const imageBuffer = objectData.Body;
+        // Set the Content-Type header to the image's MIME type
+        const contentType = objectData.ContentType;
+        res.set('Content-Type', contentType);
+        // Return the image
+        res.send(imageBuffer);
+    }
+    catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Unable to get image',
+            error: error.message
+        });
+    }
+    ;
+}
+exports.getImage = getImage;
+;
+async function deleteImage(req, res) {
+    // const filename = req.params.filename;
+    try {
+        const imageKey = await (0, sellerFunctions_1.getSellerImageKey)(req.seller.id);
+        if (!imageKey) {
+            res.status(400).send({
+                success: false,
+                message: "Image does not exist"
+            });
+            return;
+        }
+        ;
+        // Delete the image from S3
+        const deleteParams = {
+            Bucket: process.env.AWS_BUCKET_NAME,
+            Key: imageKey,
+        };
+        await image_config_1.s3.deleteObject(deleteParams).promise();
+        res.json({
+            success: true,
+            message: 'Image deleted.'
+        });
+        await (0, sellerFunctions_1.deleteSellerImage)(req.seller.id);
+    }
+    catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Unable to delete image',
+            error: error.message
+        });
+    }
+    ;
+}
+exports.deleteImage = deleteImage;
+;

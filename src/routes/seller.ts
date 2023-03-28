@@ -1,19 +1,20 @@
 import express, { Router } from 'express';
 import {body} from 'express-validator'
 import { verifySellerToken } from '../auth/sellerAuth';
-// import {upload} from '../images2/uploads';
 
-import multer from 'multer';
-const upload = multer({ dest: 'uploads/ '})
 import { 
     deleteAccount,
+    deleteImage,
+    getImage,
     getSellerAccount,
     loginSeller, 
+    resetSellerPassword, 
     signUpSeller, 
     updateSellerAccount,
     updateSellerPassword,
-    uploadSellerImage
+    uploadImage,
 } from '../controllers/seller';
+import { upload } from '../image.config';
 
 const router: Router = express.Router();
 
@@ -24,11 +25,14 @@ router.post(
     .isLength({min: 8})
     .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/), 
     signUpSeller);
-router.post('/login', loginSeller);
+router.post('/login', body('email').isEmail(), loginSeller);
 router.put('/update_account', verifySellerToken, updateSellerAccount);
 router.get('/get_account', verifySellerToken, getSellerAccount);
 router.delete('/delete_account', verifySellerToken, deleteAccount);
-router.post('/upload-image', verifySellerToken,  upload.single('image'), uploadSellerImage);
-router.put('/update_password', verifySellerToken, updateSellerPassword)
+router.put('/update_password', verifySellerToken, updateSellerPassword);
+router.post('/upload_image', verifySellerToken, upload.single('image'), uploadImage)
+router.get('/get_image/:filename', getImage)
+router.delete('/delete_image', verifySellerToken, deleteImage)
+router.post('/reset_password', verifySellerToken, resetSellerPassword)
 
 export default router;

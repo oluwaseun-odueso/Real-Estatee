@@ -79,6 +79,18 @@ export async function retrieveSellerHashedPassword(email: string): Promise<strin
     };
 };
 
+export async function getSellerImageKey (id: number): Promise<string> {
+    try {
+        const sellerImageKey = await Seller.findOne({
+            attributes: [ "image_key"],
+            where: { id }
+        })
+        return JSON.parse(JSON.stringify(sellerImageKey)).image_key;
+    } catch (error) {
+        throw new Error(`Error retrieving seller's image key: ${error}`)
+    }
+};
+
 export async function confirmSellerRetrievedPassword(password: string, hashedPassword: string): Promise<boolean> {
     try {
         const confirmPassword = await bcrypt.compare(password, hashedPassword)
@@ -161,13 +173,24 @@ export async function deleteSellerAccount(id: number): Promise<number> {
     };
 };
 
-export async function saveSellerImageKey(id: number, image_key: string) {
+export async function saveSellerImageUrlAndKey(id: number, image_key: string, image_url: string) {
     try {
-        const updated = await Seller.update({image_key}, {
+        const updated = await Seller.update({image_key, image_url}, {
             where: { id }
         })
         return updated
     } catch (error) {
-        throw new Error(`Error saving seller's profile photo: ${error}`)
+        throw new Error(`Error saving seller's profile photo image url and key: ${error}`)
+    };
+};
+
+export async function deleteSellerImage(id: number) {
+    try {
+        const updated = await Seller.update({image_key: null, image_url: null}, {
+            where: { id }
+        })
+        return updated
+    } catch (error) {
+        throw new Error(`Error deleting seller's image: ${error}`)
     };
 };

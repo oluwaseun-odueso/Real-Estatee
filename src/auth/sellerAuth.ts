@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { SellerType } from "../functions/sellerFunctions";
-require("dotenv").config();
+import dotenv from 'dotenv';
+dotenv.config();
 
 const secretKey = process.env.PAYLOAD_SECRET as string;
 if (!secretKey) {

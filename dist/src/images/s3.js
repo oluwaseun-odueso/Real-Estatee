@@ -9,7 +9,7 @@ const fs_1 = __importDefault(require("fs"));
 const S3 = require('aws-sdk/clients/s3');
 const bucketName = process.env.AWS_BUCKET_NAME;
 const region = process.env.AWS_BUCKET_REGION;
-const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
+const accessKeyId = process.env.AWS_ACCESS_KEY;
 const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
 const s3 = new S3({
     region,
@@ -18,10 +18,10 @@ const s3 = new S3({
 });
 // uploads images to s3
 function uploadFile(file) {
-    const fileStream = fs_1.default.createReadStream(file.buffer);
+    const fileStream = fs_1.default.createReadStream(file.path);
+    // const fileStream = file
     const uploadParams = {
         Bucket: bucketName,
-        acl: "public-read",
         Body: fileStream,
         Key: file.filename
     };
