@@ -20,7 +20,8 @@ import {
     deleteSellerAccount,
     saveSellerImageUrlAndKey,
     updatePassword,
-    deleteSellerImage
+    deleteSellerImage,
+    getSellerImageKey
 } from '../functions/sellerFunctions'
 import { mail } from '../util/mail';
 import { s3 } from "../image.config"
@@ -295,12 +296,12 @@ export async function uploadImage (req: Request, res: Response) {
 };
 
 export async function getImage (req: Request, res: Response) {
-    const filename = req.params.filename;
+    const imageKey = req.params.filename;
     try {
         // Retrieve the image from S3
         const downloadParams = {
         Bucket: process.env.AWS_BUCKET_NAME!,
-        Key: filename,
+        Key: imageKey,
         };
         const objectData = await s3.getObject(downloadParams).promise();
         const imageBuffer = objectData.Body;
@@ -321,12 +322,13 @@ export async function getImage (req: Request, res: Response) {
 };
 
 export async function deleteImage (req: Request, res: Response) {
-    const filename = req.params.filename;
+    // const filename = req.params.filename;
     try {
+        const imageKey = await getSellerImageKey(req.seller.id);
         // Delete the image from S3
         const deleteParams = {
             Bucket: process.env.AWS_BUCKET_NAME!,
-            Key: filename,
+            Key: imageKey,
         };
 
         await s3.deleteObject(deleteParams).promise();

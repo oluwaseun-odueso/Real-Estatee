@@ -79,6 +79,18 @@ export async function retrieveSellerHashedPassword(email: string): Promise<strin
     };
 };
 
+export async function getSellerImageKey (id: number): Promise<string> {
+    try {
+        const sellerImageKey = await Seller.findOne({
+            attributes: [ "image_key"],
+            where: { id }
+        })
+        return JSON.parse(JSON.stringify(sellerImageKey)).image_key;
+    } catch (error) {
+        throw new Error(`Error retrieving seller's image key: ${error}`)
+    }
+};
+
 export async function confirmSellerRetrievedPassword(password: string, hashedPassword: string): Promise<boolean> {
     try {
         const confirmPassword = await bcrypt.compare(password, hashedPassword)

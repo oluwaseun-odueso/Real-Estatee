@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteSellerImage = exports.saveSellerImageUrlAndKey = exports.deleteSellerAccount = exports.updatePassword = exports.updateSellerAccountDetails = exports.checkIfEntriesMatch = exports.getFullSellerDetails = exports.getSellerWithoutAddressId = exports.getSellerById = exports.confirmSellerRetrievedPassword = exports.retrieveSellerHashedPassword = exports.getSellerByEmail = exports.hashPassword = exports.checkPhoneNumber = exports.checkEmail = exports.createSeller = void 0;
+exports.deleteSellerImage = exports.saveSellerImageUrlAndKey = exports.deleteSellerAccount = exports.updatePassword = exports.updateSellerAccountDetails = exports.checkIfEntriesMatch = exports.getFullSellerDetails = exports.getSellerWithoutAddressId = exports.getSellerById = exports.confirmSellerRetrievedPassword = exports.getSellerImageKey = exports.retrieveSellerHashedPassword = exports.getSellerByEmail = exports.hashPassword = exports.checkPhoneNumber = exports.checkEmail = exports.createSeller = void 0;
 const seller_1 = require("../models/seller");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const addressFunctions_1 = require("./addressFunctions");
@@ -89,6 +89,20 @@ async function retrieveSellerHashedPassword(email) {
     ;
 }
 exports.retrieveSellerHashedPassword = retrieveSellerHashedPassword;
+;
+async function getSellerImageKey(id) {
+    try {
+        const sellerImageKey = await seller_1.Seller.findOne({
+            attributes: ["image_key"],
+            where: { id }
+        });
+        return JSON.parse(JSON.stringify(sellerImageKey)).image_key;
+    }
+    catch (error) {
+        throw new Error(`Error retrieving seller's image key: ${error}`);
+    }
+}
+exports.getSellerImageKey = getSellerImageKey;
 ;
 async function confirmSellerRetrievedPassword(password, hashedPassword) {
     try {

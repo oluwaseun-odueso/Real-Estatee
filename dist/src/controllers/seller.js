@@ -300,12 +300,12 @@ async function uploadImage(req, res) {
 exports.uploadImage = uploadImage;
 ;
 async function getImage(req, res) {
-    const filename = req.params.filename;
+    const imageKey = req.params.filename;
     try {
         // Retrieve the image from S3
         const downloadParams = {
             Bucket: process.env.AWS_BUCKET_NAME,
-            Key: filename,
+            Key: imageKey,
         };
         const objectData = await image_config_1.s3.getObject(downloadParams).promise();
         const imageBuffer = objectData.Body;
@@ -327,12 +327,13 @@ async function getImage(req, res) {
 exports.getImage = getImage;
 ;
 async function deleteImage(req, res) {
-    const filename = req.params.filename;
+    // const filename = req.params.filename;
     try {
+        const imageKey = await (0, sellerFunctions_1.getSellerImageKey)(req.seller.id);
         // Delete the image from S3
         const deleteParams = {
             Bucket: process.env.AWS_BUCKET_NAME,
-            Key: filename,
+            Key: imageKey,
         };
         await image_config_1.s3.deleteObject(deleteParams).promise();
         res.json({
