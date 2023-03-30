@@ -49,3 +49,9 @@ export type CustomPropertyFeature = {
   feature_id: number;
   number: number;
 };
+
+export type CustomPropertyImages = {
+  id: number,
+  property_id: number,
+  image_key: string
+};

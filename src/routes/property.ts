@@ -25,6 +25,6 @@ router.get('/get_property_features/:id', getPropertyFeatures)
 router.put('/update_property/:id', verifySellerToken, updateProperty)
 router.put('/update_property_features/:id', verifySellerToken, updatePropertyFeatures)
 router.delete('/delete_property/:id', verifySellerToken, deleteProperty);
-router.post('/upload_images', verifySellerToken, upload.array('images', 30), uploadImages)
+router.post('/upload_images/:id', verifySellerToken, upload.array('images', 30), uploadImages)
 
 export default router;

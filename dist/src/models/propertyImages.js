@@ -18,6 +18,10 @@ PropertyImages.init({
     image_key: {
         type: sequelize_1.DataTypes.STRING,
         allowNull: false
+    },
+    image_url: {
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: false
     }
 }, {
     // Other model options go here

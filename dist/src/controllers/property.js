@@ -4,6 +4,7 @@ exports.uploadImages = exports.deleteProperty = exports.updateProperty = exports
 const addressFunctions_1 = require("../functions/addressFunctions");
 const propertyFeaturesFunctions_1 = require("../functions/propertyFeaturesFunctions");
 const propertyFunctions_1 = require("../functions/propertyFunctions");
+const propertyImagesFunctions_1 = require("../functions/propertyImagesFunctions");
 const image_config_1 = require("../image.config");
 async function addProperty(req, res) {
     try {
@@ -136,6 +137,9 @@ exports.deleteProperty = deleteProperty;
 ;
 async function uploadImages(req, res) {
     const files = req.files;
+    // console.log(req.params.property_id)
+    const property_id = parseInt(req.params.id, 10);
+    console.log(property_id);
     try {
         let Keys = [];
         let Urls = [];
@@ -151,7 +155,9 @@ async function uploadImages(req, res) {
                     ContentType: contentType,
                 };
                 const result = await image_config_1.s3.upload(uploadParams).promise();
-                // await saveSellerImageUrlAndKey(req.seller.id, result.Key, result.Location)
+                const image_key = result.Key;
+                const image_url = result.Location;
+                await (0, propertyImagesFunctions_1.createPropertyImage)({ property_id, image_key, image_url });
                 Keys.push(result.Key);
                 Urls.push(result.Location);
             }

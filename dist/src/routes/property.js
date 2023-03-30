@@ -16,5 +16,5 @@ router.get('/get_property_features/:id', propertyFeature_1.getPropertyFeatures);
 router.put('/update_property/:id', sellerAuth_1.verifySellerToken, property_1.updateProperty);
 router.put('/update_property_features/:id', sellerAuth_1.verifySellerToken, propertyFeature_1.updatePropertyFeatures);
 router.delete('/delete_property/:id', sellerAuth_1.verifySellerToken, property_1.deleteProperty);
-router.post('/upload_images', sellerAuth_1.verifySellerToken, image_config_1.upload.array('images', 30), property_1.uploadImages);
+router.post('/upload_images/:id', sellerAuth_1.verifySellerToken, image_config_1.upload.array('images', 30), property_1.uploadImages);
 exports.default = router;

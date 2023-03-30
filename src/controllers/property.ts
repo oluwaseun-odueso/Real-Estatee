@@ -9,6 +9,7 @@ import {
     getPropertyById, 
     updatePropertyDetails
     } from '../functions/propertyFunctions';
+import { createPropertyImage } from '../functions/propertyImagesFunctions';
 import { s3 } from '../image.config';
 
 export async function addProperty(req: Request, res: Response) {
@@ -131,6 +132,7 @@ export async function deleteProperty(req: Request, res: Response) {
 
 export async function uploadImages (req: Request, res: Response) {
     const files: any = req.files;
+    const property_id = parseInt(req.params.id, 10)
     try {
         let Keys: string[] = [];
         let Urls: string[] = [];
@@ -147,12 +149,13 @@ export async function uploadImages (req: Request, res: Response) {
                 };
 
                 const result: any = await s3.upload(uploadParams).promise();
-                // await saveSellerImageUrlAndKey(req.seller.id, result.Key, result.Location)
+                const image_key = result.Key
+                const image_url = result.Location
+                await createPropertyImage({property_id, image_key, image_url})
                 Keys.push(result.Key);
                 Urls.push(result.Location)
             }
         }
-
         res.json({
             success: true, 
             message: "Pictures uploaded", 

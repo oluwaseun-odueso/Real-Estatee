@@ -50,3 +50,8 @@ export type CustomPropertyFeature = {
     number: number
 };
 
+export type CustomPropertyImages = {
+    id: number,
+    property_id: number,
+    image_key: string
+};
