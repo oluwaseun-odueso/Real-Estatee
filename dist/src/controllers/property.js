@@ -1,9 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteProperty = exports.updateProperty = exports.getProperty = exports.addProperty = void 0;
+exports.uploadImages = exports.deleteProperty = exports.updateProperty = exports.getProperty = exports.addProperty = void 0;
 const addressFunctions_1 = require("../functions/addressFunctions");
 const propertyFeaturesFunctions_1 = require("../functions/propertyFeaturesFunctions");
 const propertyFunctions_1 = require("../functions/propertyFunctions");
+const image_config_1 = require("../image.config");
 async function addProperty(req, res) {
     try {
         if (!req.body.description || !req.body.type || !req.body.street || !req.body.city || !req.body.state || !req.body.country || !req.body.price) {
@@ -133,3 +134,41 @@ async function deleteProperty(req, res) {
 }
 exports.deleteProperty = deleteProperty;
 ;
+async function uploadImages(req, res) {
+    const files = req.files;
+    try {
+        let Keys = [];
+        let Urls = [];
+        if (files && files.length > 0) {
+            for (let i = 0; i < files.length; i++) {
+                const filename = `${Date.now()}-${files[i].originalname}`;
+                const fileStream = files[i].buffer;
+                const contentType = files[i].mimetype;
+                const uploadParams = {
+                    Bucket: process.env.AWS_BUCKET_NAME,
+                    Key: filename,
+                    Body: fileStream,
+                    ContentType: contentType,
+                };
+                const result = await image_config_1.s3.upload(uploadParams).promise();
+                // await saveSellerImageUrlAndKey(req.seller.id, result.Key, result.Location)
+                Keys.push(result.Key);
+                Urls.push(result.Location);
+            }
+        }
+        res.json({
+            success: true,
+            message: "Pictures uploaded",
+            keys: Keys,
+            urls: Urls
+        });
+    }
+    catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Error uploading image(s)',
+            error: error.message
+        });
+    }
+}
+exports.uploadImages = uploadImages;

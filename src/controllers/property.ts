@@ -9,6 +9,7 @@ import {
     getPropertyById, 
     updatePropertyDetails
     } from '../functions/propertyFunctions';
+import { s3 } from '../image.config';
 
 export async function addProperty(req: Request, res: Response) {
     try {
@@ -127,3 +128,42 @@ export async function deleteProperty(req: Request, res: Response) {
         });
     };
 };
+
+export async function uploadImages (req: Request, res: Response) {
+    const files: any = req.files;
+    try {
+        let Keys: string[] = [];
+        let Urls: string[] = [];
+        if(files && files.length > 0) {
+            for (let i = 0; i < files.length; i++) {
+                const filename = `${Date.now()}-${files[i].originalname}`;
+                const fileStream = files[i].buffer;
+                const contentType = files[i].mimetype;
+                const uploadParams = {
+                Bucket: process.env.AWS_BUCKET_NAME!,
+                Key: filename,
+                Body: fileStream,
+                ContentType: contentType,
+                };
+
+                const result: any = await s3.upload(uploadParams).promise();
+                // await saveSellerImageUrlAndKey(req.seller.id, result.Key, result.Location)
+                Keys.push(result.Key);
+                Urls.push(result.Location)
+            }
+        }
+
+        res.json({
+            success: true, 
+            message: "Pictures uploaded", 
+            keys: Keys,
+            urls: Urls
+        });
+    } catch (error: any) {
+        return res.status(500).json({ 
+            success: false, 
+            message: 'Error uploading image(s)', 
+            error: error.message
+        });
+    }
+}
