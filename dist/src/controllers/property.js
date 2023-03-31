@@ -1,9 +1,37 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteProperty = exports.updateProperty = exports.getProperty = exports.addProperty = void 0;
+exports.uploadImages = exports.deleteProperty = exports.updateProperty = exports.getProperty = exports.addProperty = exports.getProperties = void 0;
 const addressFunctions_1 = require("../functions/addressFunctions");
 const propertyFeaturesFunctions_1 = require("../functions/propertyFeaturesFunctions");
 const propertyFunctions_1 = require("../functions/propertyFunctions");
+const propertyImagesFunctions_1 = require("../functions/propertyImagesFunctions");
+const image_config_1 = require("../image.config");
+// export interface PaginationI {
+//     limit: number,
+//     page: number
+// };
+async function getProperties(req, res) {
+    try {
+        const queries = {
+            page: Number(req.query.page) || 1,
+            limit: Number(req.query.limit) || 20
+        };
+        const properties = await (0, propertyFunctions_1.getManyProperties)(queries);
+        res.status(200).send({
+            success: true,
+            properties
+        });
+    }
+    catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Error fetching properties.',
+            error: error.message
+        });
+    }
+    ;
+}
+exports.getProperties = getProperties;
 async function addProperty(req, res) {
     try {
         if (!req.body.description || !req.body.type || !req.body.street || !req.body.city || !req.body.state || !req.body.country || !req.body.price) {
@@ -133,3 +161,44 @@ async function deleteProperty(req, res) {
 }
 exports.deleteProperty = deleteProperty;
 ;
+async function uploadImages(req, res) {
+    const files = req.files;
+    const property_id = parseInt(req.params.id, 10);
+    try {
+        let Keys = [];
+        let Urls = [];
+        if (files && files.length > 0) {
+            for (let i = 0; i < files.length; i++) {
+                const filename = `${Date.now()}-${files[i].originalname}`;
+                const fileStream = files[i].buffer;
+                const contentType = files[i].mimetype;
+                const uploadParams = {
+                    Bucket: process.env.AWS_BUCKET_NAME,
+                    Key: filename,
+                    Body: fileStream,
+                    ContentType: contentType,
+                };
+                const result = await image_config_1.s3.upload(uploadParams).promise();
+                const image_key = result.Key;
+                const image_url = result.Location;
+                await (0, propertyImagesFunctions_1.createPropertyImage)({ property_id, image_key, image_url });
+                Keys.push(result.Key);
+                Urls.push(result.Location);
+            }
+        }
+        res.json({
+            success: true,
+            message: "Pictures uploaded",
+            keys: Keys,
+            urls: Urls
+        });
+    }
+    catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Error uploading image(s)',
+            error: error.message
+        });
+    }
+}
+exports.uploadImages = uploadImages;

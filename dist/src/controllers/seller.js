@@ -265,7 +265,7 @@ exports.resetSellerPassword = resetSellerPassword;
 async function uploadImage(req, res) {
     const file = req.file;
     if (!file) {
-        res.status(400).json({ error: 'No image uploaded.' });
+        res.status(400).json({ error: 'Please select a file' });
         return;
     }
     try {

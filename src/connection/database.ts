@@ -4,7 +4,7 @@ require("dotenv").config();
 const database = process.env.PROD_DATABASE;
 const user = process.env.PROD_USERNAME;
 const password = process.env.PROD_PASSWORD;
-const host = process.env.PROD_HOST
+const host = process.env.PROD_HOST;
 
 if (!database || !user || !password) {
   throw new Error(

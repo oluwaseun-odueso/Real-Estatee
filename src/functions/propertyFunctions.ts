@@ -11,6 +11,20 @@ export type PropertyType = {
     price: string
 };
 
+export interface QueryParam {
+    page: number, 
+    limit: number
+};
+
+export async function getManyProperties (query: QueryParam): Promise<Property[]> {
+    const properties = await Property.findAll({
+        limit: query.limit,
+        offset: (query.page - 1) * 20
+    });
+
+    return properties
+}
+
 export async function createProperty(propertyDetails: PropertyType): Promise<CustomProperty> {
     try {
         const property = await Property.create(propertyDetails)

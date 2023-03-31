@@ -1,9 +1,18 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteSellerProperty = exports.updatePropertyDetails = exports.getFullPropertyDetails = exports.getPropertyById = exports.checkIfSellerHasProperty = exports.createProperty = void 0;
+exports.deleteSellerProperty = exports.updatePropertyDetails = exports.getFullPropertyDetails = exports.getPropertyById = exports.checkIfSellerHasProperty = exports.createProperty = exports.getManyProperties = void 0;
 const property_1 = require("../models/property");
 const addressFunctions_1 = require("./addressFunctions");
 const propertyFeaturesFunctions_1 = require("./propertyFeaturesFunctions");
+;
+async function getManyProperties(query) {
+    const properties = await property_1.Property.findAll({
+        limit: query.limit,
+        offset: (query.page - 1) * 20
+    });
+    return properties;
+}
+exports.getManyProperties = getManyProperties;
 async function createProperty(propertyDetails) {
     try {
         const property = await property_1.Property.create(propertyDetails);
