@@ -14,10 +14,11 @@ router.post('/put_property_for_sale', sellerAuth_1.verifySellerToken, property_1
 router.post('/add_property_features/:id', sellerAuth_1.verifySellerToken, propertyFeature_1.addPropertyFeature);
 router.get('/get_property/:id', property_1.getProperty);
 router.get('/get_property_features/:id', propertyFeature_1.getPropertyFeatures);
+router.get('/get_all_properties', property_1.getProperties);
 router.put('/update_property/:id', sellerAuth_1.verifySellerToken, property_1.updateProperty);
 router.put('/update_property_features/:id', sellerAuth_1.verifySellerToken, propertyFeature_1.updatePropertyFeatures);
 router.delete('/delete_property/:id', sellerAuth_1.verifySellerToken, property_1.deleteProperty);
 router.post('/upload_images/:id', sellerAuth_1.verifySellerToken, image_config_1.upload.array('images', 30), property_1.uploadImages);
 router.get('/get_image/:filename', seller_1.getImage);
-router.get('/get_all_properties', property_1.getProperties);
+router.delete('/delete_images/:id', sellerAuth_1.verifySellerToken, property_1.deleteImages);
 exports.default = router;

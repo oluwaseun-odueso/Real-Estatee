@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.uploadImages = exports.deleteProperty = exports.updateProperty = exports.getProperty = exports.addProperty = exports.getProperties = void 0;
+exports.deleteImages = exports.uploadImages = exports.deleteProperty = exports.updateProperty = exports.getProperty = exports.addProperty = exports.getProperties = void 0;
 const addressFunctions_1 = require("../functions/addressFunctions");
 const propertyFeaturesFunctions_1 = require("../functions/propertyFeaturesFunctions");
 const propertyFunctions_1 = require("../functions/propertyFunctions");
@@ -198,4 +198,40 @@ async function uploadImages(req, res) {
     }
 }
 exports.uploadImages = uploadImages;
+;
+async function deleteImages(req, res) {
+    console.log(req.body);
+    const imageKeys = req.body;
+    console.log(imageKeys);
+    try {
+        // Delete the image from S3
+        const deleteParams = {
+            Bucket: process.env.AWS_BUCKET_NAME,
+            Delete: {
+                Objects: imageKeys
+            }
+            // Key: imageKeys,
+        };
+        await image_config_1.s3.deleteObjects(deleteParams).promise();
+        res.json({
+            success: true,
+            message: 'Image(s) deleted.'
+        });
+        // await s3.deleteObject(deleteParams).promise();
+        // res.json({ b
+        //     success: true, 
+        //     message: 'Image deleted.' 
+        // });
+        // await deletePropertyImages(req.seller.id)
+    }
+    catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Unable to delete image',
+            error: error.message
+        });
+    }
+    ;
+}
+exports.deleteImages = deleteImages;
 ;

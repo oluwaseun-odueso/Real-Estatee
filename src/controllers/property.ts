@@ -192,3 +192,31 @@ export async function uploadImages (req: Request, res: Response) {
         });
     }
 };
+
+export async function deleteImages (req: Request, res: Response) {
+    console.log(req.body)
+    const imageKeys: any = req.body;
+    console.log(imageKeys)
+    try {
+        // Delete the image from S3
+        const deleteParams = {
+            Bucket: process.env.AWS_BUCKET_NAME!,
+            Delete: {
+                Objects: imageKeys
+            }
+            // Key: imageKeys,
+        };
+
+        await s3.deleteObjects(deleteParams).promise();
+        res.json({ 
+            success: true, 
+            message: 'Image(s) deleted.' 
+        });
+    } catch (error: any) {
+        return res.status(500).json({ 
+            success: false, 
+            message: 'Unable to delete image',
+            error: error.message
+        });    
+    };
+};
