@@ -6,10 +6,6 @@ const propertyFeaturesFunctions_1 = require("../functions/propertyFeaturesFuncti
 const propertyFunctions_1 = require("../functions/propertyFunctions");
 const propertyImagesFunctions_1 = require("../functions/propertyImagesFunctions");
 const image_config_1 = require("../image.config");
-// export interface PaginationI {
-//     limit: number,
-//     page: number
-// };
 async function getProperties(req, res) {
     try {
         const queries = {
@@ -202,3 +198,4 @@ async function uploadImages(req, res) {
     }
 }
 exports.uploadImages = uploadImages;
+;

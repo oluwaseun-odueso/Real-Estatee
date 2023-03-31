@@ -15,11 +15,6 @@ import {
 import { createPropertyImage } from '../functions/propertyImagesFunctions';
 import { s3 } from '../image.config';
 
-// export interface PaginationI {
-//     limit: number,
-//     page: number
-// };
-
 export async function getProperties(req: Request, res: Response) {
     try {
         const queries: QueryParam = {
@@ -196,4 +191,4 @@ export async function uploadImages (req: Request, res: Response) {
             error: error.message
         });
     }
-}
+};

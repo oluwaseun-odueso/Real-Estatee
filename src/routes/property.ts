@@ -1,4 +1,4 @@
-import express from 'express';
+import express, {Request, Response} from 'express';
 import { verifySellerToken } from '../auth/sellerAuth'
 
 import { 
@@ -15,6 +15,7 @@ import {
     getPropertyFeatures, 
     updatePropertyFeatures 
 } from '../controllers/propertyFeature';
+import { getImage } from '../controllers/seller';
 import { upload } from '../image.config';
 
 const router = express.Router()
@@ -27,6 +28,7 @@ router.put('/update_property/:id', verifySellerToken, updateProperty)
 router.put('/update_property_features/:id', verifySellerToken, updatePropertyFeatures)
 router.delete('/delete_property/:id', verifySellerToken, deleteProperty);
 router.post('/upload_images/:id', verifySellerToken, upload.array('images', 30), uploadImages)
+router.get('/get_image/:filename', getImage)
 router.get('/get_all_properties', getProperties)
 
 export default router;

@@ -7,6 +7,7 @@ const express_1 = __importDefault(require("express"));
 const sellerAuth_1 = require("../auth/sellerAuth");
 const property_1 = require("../controllers/property");
 const propertyFeature_1 = require("../controllers/propertyFeature");
+const seller_1 = require("../controllers/seller");
 const image_config_1 = require("../image.config");
 const router = express_1.default.Router();
 router.post('/put_property_for_sale', sellerAuth_1.verifySellerToken, property_1.addProperty);
@@ -17,5 +18,6 @@ router.put('/update_property/:id', sellerAuth_1.verifySellerToken, property_1.up
 router.put('/update_property_features/:id', sellerAuth_1.verifySellerToken, propertyFeature_1.updatePropertyFeatures);
 router.delete('/delete_property/:id', sellerAuth_1.verifySellerToken, property_1.deleteProperty);
 router.post('/upload_images/:id', sellerAuth_1.verifySellerToken, image_config_1.upload.array('images', 30), property_1.uploadImages);
+router.get('/get_image/:filename', seller_1.getImage);
 router.get('/get_all_properties', property_1.getProperties);
 exports.default = router;
