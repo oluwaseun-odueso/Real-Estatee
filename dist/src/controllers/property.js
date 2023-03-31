@@ -1,11 +1,37 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.uploadImages = exports.deleteProperty = exports.updateProperty = exports.getProperty = exports.addProperty = void 0;
+exports.uploadImages = exports.deleteProperty = exports.updateProperty = exports.getProperty = exports.addProperty = exports.getProperties = void 0;
 const addressFunctions_1 = require("../functions/addressFunctions");
 const propertyFeaturesFunctions_1 = require("../functions/propertyFeaturesFunctions");
 const propertyFunctions_1 = require("../functions/propertyFunctions");
 const propertyImagesFunctions_1 = require("../functions/propertyImagesFunctions");
 const image_config_1 = require("../image.config");
+// export interface PaginationI {
+//     limit: number,
+//     page: number
+// };
+async function getProperties(req, res) {
+    try {
+        const queries = {
+            page: Number(req.query.page) || 1,
+            limit: Number(req.query.limit) || 20
+        };
+        const properties = await (0, propertyFunctions_1.getManyProperties)(queries);
+        res.status(200).send({
+            success: true,
+            properties
+        });
+    }
+    catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Error fetching properties.',
+            error: error.message
+        });
+    }
+    ;
+}
+exports.getProperties = getProperties;
 async function addProperty(req, res) {
     try {
         if (!req.body.description || !req.body.type || !req.body.street || !req.body.city || !req.body.state || !req.body.country || !req.body.price) {
@@ -137,9 +163,7 @@ exports.deleteProperty = deleteProperty;
 ;
 async function uploadImages(req, res) {
     const files = req.files;
-    // console.log(req.params.property_id)
     const property_id = parseInt(req.params.id, 10);
-    console.log(property_id);
     try {
         let Keys = [];
         let Urls = [];

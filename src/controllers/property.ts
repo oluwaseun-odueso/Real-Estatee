@@ -1,3 +1,4 @@
+import { MediaPackage } from 'aws-sdk';
 import {Request, Response} from 'express';
 import { addAddress, deletePropertyAddress, updateAddressDetails } from '../functions/addressFunctions';
 import { deletePropertyFeatures } from '../functions/propertyFeaturesFunctions';
@@ -6,12 +7,38 @@ import {
     createProperty, 
     deleteSellerProperty, 
     getFullPropertyDetails, 
+    getManyProperties, 
     getPropertyById, 
+    QueryParam, 
     updatePropertyDetails
     } from '../functions/propertyFunctions';
 import { createPropertyImage } from '../functions/propertyImagesFunctions';
 import { s3 } from '../image.config';
 
+// export interface PaginationI {
+//     limit: number,
+//     page: number
+// };
+
+export async function getProperties(req: Request, res: Response) {
+    try {
+        const queries: QueryParam = {
+            page: Number(req.query.page) || 1,
+            limit: Number(req.query.limit) || 20
+        }
+        const properties = await getManyProperties(queries)
+        res.status(200).send({ 
+            success: true,
+            properties
+        })
+    } catch (error: any) {
+        return res.status(500).json({
+            success: false,
+            message: 'Error fetching properties.',
+            error: error.message
+        });
+    };
+}
 export async function addProperty(req: Request, res: Response) {
     try {
         if (!req.body.description || !req.body.type || !req.body.street || !req.body.city || !req.body.state || !req.body.country || !req.body.price) {
