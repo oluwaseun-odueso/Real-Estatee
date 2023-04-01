@@ -6,21 +6,15 @@ const property_1 = require("../models/property");
 const addressFunctions_1 = require("./addressFunctions");
 const propertyFeaturesFunctions_1 = require("./propertyFeaturesFunctions");
 ;
-const optionalWhereClause = true;
 async function getManyProperties(query) {
     const search = query.search;
     const filter = query.filter;
-    // const properties = await Property.findAll({
-    //     limit: query.limit,
-    //     offset: (query.page - 1) * 20,
-    //     where: { description: { [Op.like]: '%' + search + '%'} }
-    // });
     const queryOptions = {
         limit: query.limit,
         offset: (query.page - 1) * 20,
         where: {},
     };
-    if (optionalWhereClause) {
+    if (search != "undefined") {
         queryOptions.where = {
             description: {
                 [sequelize_1.Op.like]: '%' + search + '%'

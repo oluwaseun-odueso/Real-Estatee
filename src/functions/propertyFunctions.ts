@@ -19,18 +19,9 @@ export interface QueryParam {
     filter?: string
 };
 
-const optionalWhereClause = true;
-
 export async function getManyProperties (query: QueryParam): Promise<Property[]> {
     const search = query.search
     const filter = query.filter
-    // const properties = await Property.findAll({
-    //     limit: query.limit,
-    //     offset: (query.page - 1) * 20,
-
-    //     where: { description: { [Op.like]: '%' + search + '%'} }
-        
-    // });
 
     const queryOptions = {
         limit: query.limit,
@@ -38,14 +29,13 @@ export async function getManyProperties (query: QueryParam): Promise<Property[]>
         where: {},
       };
       
-      if (optionalWhereClause) {
+      if ( search != "undefined") {
         queryOptions.where = {
           description: {
             [Op.like]: '%' + search + '%'
           },
         };
       }
-      
       const properties = await Property.findAll(queryOptions);
 
     return properties
