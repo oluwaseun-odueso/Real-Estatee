@@ -341,7 +341,7 @@ async function deleteImage(req, res) {
         // Delete the image from S3
         const deleteParams = {
             Bucket: process.env.AWS_BUCKET_NAME,
-            Key: {},
+            Key: imageKey,
         };
         await image_config_1.s3.deleteObject(deleteParams).promise();
         res.json({

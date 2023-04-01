@@ -10,7 +10,9 @@ async function getProperties(req, res) {
     try {
         const queries = {
             page: Number(req.query.page) || 1,
-            limit: Number(req.query.limit) || 20
+            limit: Number(req.query.limit) || 20,
+            search: String(req.query.search) || "",
+            filter: String(req.query.filter) || ""
         };
         const properties = await (0, propertyFunctions_1.getManyProperties)(queries);
         res.status(200).send({
@@ -212,17 +214,21 @@ async function deleteImages(req, res) {
             }
             // Key: imageKeys,
         };
-        await image_config_1.s3.deleteObjects(deleteParams).promise();
-        res.json({
-            success: true,
-            message: 'Image(s) deleted.'
-        });
-        // await s3.deleteObject(deleteParams).promise();
-        // res.json({ b
+        // await s3.deleteObjects(deleteParams).promise();
+        // res.json({ 
         //     success: true, 
-        //     message: 'Image deleted.' 
+        //     message: 'Image(s) deleted.' 
         // });
-        // await deletePropertyImages(req.seller.id)
+        image_config_1.s3.deleteObjects(deleteParams, (err, data) => {
+            if (err) {
+                console.error(err);
+                res.status(500).json({ message: 'Error deleting images' });
+            }
+            else {
+                console.log('Deleted objects:', data.Deleted);
+                res.json({ message: 'Images deleted successfully' });
+            }
+        });
     }
     catch (error) {
         return res.status(500).json({
