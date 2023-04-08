@@ -196,30 +196,21 @@ export async function uploadImages (req: Request, res: Response) {
 };
 
 export async function deleteImages (req: Request, res: Response) {
-    console.log(req.body)
     const imageKeys: any = req.body;
-    console.log(imageKeys)
     try {
         // Delete the image from S3
         const deleteParams = {
             Bucket: process.env.AWS_BUCKET_NAME!,
             Delete: {
-                Objects: imageKeys
+                Objects: imageKeys,
+                Quiet: false
             }
-            // Key: imageKeys,
         };
-
-        // await s3.deleteObjects(deleteParams).promise();
-        // res.json({ 
-        //     success: true, 
-        //     message: 'Image(s) deleted.' 
-        // });
-        s3.deleteObjects(deleteParams, (err, data) => {
-            if (err) {
-              console.error(err);
-              res.status(500).json({ message: 'Error deleting images' });
+        
+        s3.deleteObjects(deleteParams, (error, data) => {
+            if (error) {
+              res.status(500).json({ message: 'Error deleting images', error});
             } else {
-              console.log('Deleted objects:', data.Deleted);
               res.json({ message: 'Images deleted successfully' });
             }
           });
