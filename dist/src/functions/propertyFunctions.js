@@ -1,15 +1,27 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteSellerProperty = exports.updatePropertyDetails = exports.getFullPropertyDetails = exports.getPropertyById = exports.checkIfSellerHasProperty = exports.createProperty = exports.getManyProperties = void 0;
+const sequelize_1 = require("sequelize");
 const property_1 = require("../models/property");
 const addressFunctions_1 = require("./addressFunctions");
 const propertyFeaturesFunctions_1 = require("./propertyFeaturesFunctions");
 ;
 async function getManyProperties(query) {
-    const properties = await property_1.Property.findAll({
+    const search = query.search;
+    const filter = query.filter;
+    const queryOptions = {
         limit: query.limit,
-        offset: (query.page - 1) * 20
-    });
+        offset: (query.page - 1) * 20,
+        where: {},
+    };
+    if (search != "undefined") {
+        queryOptions.where = {
+            description: {
+                [sequelize_1.Op.like]: '%' + search + '%'
+            },
+        };
+    }
+    const properties = await property_1.Property.findAll(queryOptions);
     return properties;
 }
 exports.getManyProperties = getManyProperties;

@@ -1,20 +1,18 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.uploadImages = exports.deleteProperty = exports.updateProperty = exports.getProperty = exports.addProperty = exports.getProperties = void 0;
+exports.deleteImages = exports.uploadImages = exports.deleteProperty = exports.updateProperty = exports.getProperty = exports.addProperty = exports.getProperties = void 0;
 const addressFunctions_1 = require("../functions/addressFunctions");
 const propertyFeaturesFunctions_1 = require("../functions/propertyFeaturesFunctions");
 const propertyFunctions_1 = require("../functions/propertyFunctions");
 const propertyImagesFunctions_1 = require("../functions/propertyImagesFunctions");
 const image_config_1 = require("../image.config");
-// export interface PaginationI {
-//     limit: number,
-//     page: number
-// };
 async function getProperties(req, res) {
     try {
         const queries = {
             page: Number(req.query.page) || 1,
-            limit: Number(req.query.limit) || 20
+            limit: Number(req.query.limit) || 20,
+            search: String(req.query.search) || "",
+            filter: String(req.query.filter) || ""
         };
         const properties = await (0, propertyFunctions_1.getManyProperties)(queries);
         res.status(200).send({
@@ -202,3 +200,35 @@ async function uploadImages(req, res) {
     }
 }
 exports.uploadImages = uploadImages;
+;
+async function deleteImages(req, res) {
+    const imageKeys = req.body;
+    try {
+        // Delete the image from S3
+        const deleteParams = {
+            Bucket: process.env.AWS_BUCKET_NAME,
+            Delete: {
+                Objects: imageKeys,
+                Quiet: false
+            }
+        };
+        image_config_1.s3.deleteObjects(deleteParams, (error, data) => {
+            if (error) {
+                res.status(500).json({ message: 'Error deleting images', error });
+            }
+            else {
+                res.json({ message: 'Images deleted successfully' });
+            }
+        });
+    }
+    catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Unable to delete image',
+            error: error.message
+        });
+    }
+    ;
+}
+exports.deleteImages = deleteImages;
+;

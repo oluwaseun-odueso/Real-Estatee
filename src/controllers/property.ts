@@ -15,16 +15,13 @@ import {
 import { createPropertyImage } from '../functions/propertyImagesFunctions';
 import { s3 } from '../image.config';
 
-// export interface PaginationI {
-//     limit: number,
-//     page: number
-// };
-
 export async function getProperties(req: Request, res: Response) {
     try {
         const queries: QueryParam = {
             page: Number(req.query.page) || 1,
-            limit: Number(req.query.limit) || 20
+            limit: Number(req.query.limit) || 20,
+            search: String(req.query.search) || "",
+            filter: String(req.query.filter) || ""
         }
         const properties = await getManyProperties(queries)
         res.status(200).send({ 
@@ -196,4 +193,32 @@ export async function uploadImages (req: Request, res: Response) {
             error: error.message
         });
     }
-}
+};
+
+export async function deleteImages (req: Request, res: Response) {
+    const imageKeys: any = req.body;
+    try {
+        // Delete the image from S3
+        const deleteParams = {
+            Bucket: process.env.AWS_BUCKET_NAME!,
+            Delete: {
+                Objects: imageKeys,
+                Quiet: false
+            }
+        };
+        
+        s3.deleteObjects(deleteParams, (error, data) => {
+            if (error) {
+              res.status(500).json({ message: 'Error deleting images', error});
+            } else {
+              res.json({ message: 'Images deleted successfully' });
+            }
+          });
+    } catch (error: any) {
+        return res.status(500).json({ 
+            success: false, 
+            message: 'Unable to delete image',
+            error: error.message
+        });    
+    };
+};
