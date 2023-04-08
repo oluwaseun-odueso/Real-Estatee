@@ -340,11 +340,11 @@ export async function deleteImage (req: Request, res: Response) {
         };
 
         await s3.deleteObject(deleteParams).promise();
+        await deleteSellerImage(req.seller.id)
         res.json({ 
             success: true, 
             message: 'Image deleted.' 
         });
-        await deleteSellerImage(req.seller.id)
     } catch (error: any) {
         return res.status(500).json({ 
             success: false, 

@@ -15,59 +15,11 @@ const app: Application = express();
 
 app.use(express.json());
 app.use(
-    cors({
-        origin: ['http://localhost:3000', 'https://real-estate-collab.vercel.app/'],
-        methods: ['GET', 'POST', 'DELETE', 'UPDATE', 'PUT', 'PATCH']
-    })
+  cors({
+    origin: ["http://localhost:3000", "https://real-estate-collab.vercel.app/"],
+    methods: ["GET", "POST", "DELETE", "UPDATE", "PUT", "PATCH", "OPTIONS"],
+  })
 );
-
-// Set up multer to handle file uploads
-const upload = multer({
-    storage: multer.memoryStorage(),
-    limits: {
-      fileSize: 10 * 1024 * 1024, // 10 MB
-    },
-    fileFilter: (req, file, cb) => {
-      const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
-      if (allowedMimeTypes.includes(file.mimetype)) {
-        cb(null, true);
-      } else {
-        cb(new Error('Invalid file type.'));
-      }
-    },
-  });
-
-// Set up an Amazon S3 client
-const s3 = new AWS.S3({
-    accessKeyId: process.env.AWS_ACCESS_KEY!,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-  });
-
-app.post('/upload', upload.single('image'), async (req: Request, res: Response) => {
-  const file: any = req.file;
-  if (!file) {
-      res.status(400).json({ error: 'No image uploaded.' });
-      return;
-  }
-
-  try {
-    // Save the image to S3
-    const filename = `${Date.now()}-${file.originalname}`;
-    const fileStream = file.buffer;
-    const contentType = file.mimetype;
-    const uploadParams = {
-    Bucket: process.env.AWS_BUCKET_NAME!,
-    Key: filename,
-    Body: fileStream,
-    ContentType: contentType,
-    };
-    const result: any = await s3.upload(uploadParams).promise();
-    res.json({ url: result.Location});
-  } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: 'Unable to upload image.' });
-  }
-});
 
 app.use('/seller', sellerRoutes);
 app.use('/property', propertyRoutes);

@@ -220,6 +220,8 @@ async function deleteImages(req, res) {
                 res.json({ message: 'Images deleted successfully' });
             }
         });
+        const image_key_array = (0, propertyImagesFunctions_1.getKeyArray)(imageKeys);
+        await (0, propertyImagesFunctions_1.deletePropertyImages)(image_key_array);
     }
     catch (error) {
         return res.status(500).json({
@@ -232,3 +234,13 @@ async function deleteImages(req, res) {
 }
 exports.deleteImages = deleteImages;
 ;
+// const imageKey = [
+//     {user: "Umi"},
+//     {user: "Kimi"},
+//     {user: "Ikongbe"}
+// ]
+// const keyArray: string[] = []
+// imageKey.forEach(object => {
+//     keyArray.push(object['user'])
+// })
+// console.log(keyArray)

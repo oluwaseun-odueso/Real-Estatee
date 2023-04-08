@@ -351,11 +351,11 @@ async function deleteImage(req, res) {
             Key: imageKey,
         };
         await image_config_1.s3.deleteObject(deleteParams).promise();
+        await (0, buyerFunctions_1.deleteBuyerImage)(req.buyer.id);
         res.json({
             success: true,
             message: 'Image deleted.'
         });
-        await (0, buyerFunctions_1.deleteBuyerImage)(req.buyer.id);
     }
     catch (error) {
         return res.status(500).json({
