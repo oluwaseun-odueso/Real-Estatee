@@ -24,7 +24,7 @@ import {
     getSellerImageKey
 } from '../functions/sellerFunctions'
 import { mail } from '../util/mail';
-import { s3 } from "../image.config"
+import { s3 } from "../util/image.config"
 import dotenv from 'dotenv';
 
 dotenv.config();

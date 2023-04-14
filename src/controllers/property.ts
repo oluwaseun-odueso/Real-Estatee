@@ -16,7 +16,7 @@ import {
     deletePropertyImages, 
     getKeyArray
 } from '../functions/propertyImagesFunctions';
-import { s3 } from '../image.config';
+import { s3 } from '../util/image.config';
 
 export async function getProperties(req: Request, res: Response) {
     try {

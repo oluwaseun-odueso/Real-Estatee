@@ -9,7 +9,7 @@ const sellerAuth_1 = require("../auth/sellerAuth");
 const addressFunctions_1 = require("../functions/addressFunctions");
 const sellerFunctions_1 = require("../functions/sellerFunctions");
 const mail_1 = require("../util/mail");
-const image_config_1 = require("../image.config");
+const image_config_1 = require("../util/image.config");
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 async function signUpSeller(req, res) {

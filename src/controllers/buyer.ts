@@ -20,7 +20,7 @@ import {
     updateBuyerAccountDetails,
     updatePassword
 } from '../functions/buyerFunctions';
-import { s3 } from '../image.config';
+import { s3 } from '../util/image.config';
 import { mail } from '../util/mail';
 
 export async function signUpBuyer (req: Request, res: Response) {

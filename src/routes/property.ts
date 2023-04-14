@@ -17,7 +17,7 @@ import {
     updatePropertyFeatures 
 } from '../controllers/propertyFeature';
 import { getImage } from '../controllers/seller';
-import { upload } from '../image.config';
+import { upload } from '../util/image.config';
 
 const router = express.Router()
 

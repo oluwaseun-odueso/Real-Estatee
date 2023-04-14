@@ -5,7 +5,7 @@ const addressFunctions_1 = require("../functions/addressFunctions");
 const propertyFeaturesFunctions_1 = require("../functions/propertyFeaturesFunctions");
 const propertyFunctions_1 = require("../functions/propertyFunctions");
 const propertyImagesFunctions_1 = require("../functions/propertyImagesFunctions");
-const image_config_1 = require("../image.config");
+const image_config_1 = require("../util/image.config");
 async function getProperties(req, res) {
     try {
         const queries = {

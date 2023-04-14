@@ -7,7 +7,7 @@ const express_1 = __importDefault(require("express"));
 const express_validator_1 = require("express-validator");
 const sellerAuth_1 = require("../auth/sellerAuth");
 const seller_1 = require("../controllers/seller");
-const image_config_1 = require("../image.config");
+const image_config_1 = require("../util/image.config");
 const router = express_1.default.Router();
 router.post('/signup', (0, express_validator_1.body)('email').isEmail(), (0, express_validator_1.body)('password')
     .isLength({ min: 8 })

@@ -5,7 +5,7 @@ const express_validator_1 = require("express-validator");
 const buyerAuth_1 = require("../auth/buyerAuth");
 const addressFunctions_1 = require("../functions/addressFunctions");
 const buyerFunctions_1 = require("../functions/buyerFunctions");
-const image_config_1 = require("../image.config");
+const image_config_1 = require("../util/image.config");
 const mail_1 = require("../util/mail");
 async function signUpBuyer(req, res) {
     const errors = (0, express_validator_1.validationResult)(req);

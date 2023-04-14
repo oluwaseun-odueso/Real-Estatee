@@ -13,7 +13,7 @@ import {
     updateBuyerPassword,
     uploadImage
 } from '../controllers/buyer';
-import { upload } from '../image.config';
+import { upload } from '../util/image.config';
 const router = express.Router();
 
 router.post(
