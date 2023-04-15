@@ -23,6 +23,10 @@ Property.init({
     price: {
       type: DataTypes.STRING,
       allowNull: false
+    },
+    payment_status: {
+      type: DataTypes.STRING,
+      allowNull: true
     }
   }, {
     // Other model options go here

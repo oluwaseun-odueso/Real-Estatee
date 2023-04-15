@@ -9,7 +9,8 @@ export type PropertyType = {
     address_id: number,
     description: string,
     type: string,
-    price: string
+    price: number,
+    payment_status?: string
 };
 
 export interface QueryParam {

@@ -49,11 +49,11 @@ export async function addProperty(req: Request, res: Response) {
             return;
         };
 
-        const {description, type, street, city, state, country, price} = req.body;
+        const {description, type, street, city, state, country, price, payment_status} = req.body;
         const address = await addAddress({street, city, state, country});
         const address_id = address.id;
         const seller_id = req.seller.id
-        const property = await createProperty({seller_id, address_id, description, type, price})
+        const property = await createProperty({seller_id, address_id, description, type, price, payment_status})
         res.status(201).send({ success: true, message : "You have successfully put up a new property for sale", property})   
     } catch (error: any) {
         return res.status(500).json({
