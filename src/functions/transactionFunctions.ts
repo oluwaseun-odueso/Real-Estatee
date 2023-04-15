@@ -1,26 +1,22 @@
 import {Transaction} from '../models/transaction';
-import { getBuyerById } from './buyerFunctions';
+import dotenv from 'dotenv';
 
-export type SellerType = {
-    address_id: number,
-    first_name: string,
-    last_name: string,
-    email: string,
-    phone_number: string,
-    image_key?: string,
-    hashed_password: string, 
+dotenv.config();
+const subAccount = process.env.PAYSTACK_SUBACCOUNT!;
+
+export type TransactionType = {
+    property_id: number,
+    buyer_id: number, 
+    seller_id: number,
+    price: number,
+    reference: string,
+    payment_status: string,
+    transaction_date: Date
 };
 
-export type PurchaseType = {
-    buyer_id: number, 
-    buyer_email: number,
-    property_id: number,
-    amount: number,
-}
-
-export async function createTransaction(transactionDetails: SellerType) {
+export async function createTransaction(property_id: number, buyer_id: number, seller_id: number, price: number, reference: string, payment_status: string, transaction_date: Date) {
     try {
-        const newTransaction = await Transaction.create(transactionDetails)
+        const newTransaction = await Transaction.create({property_id, buyer_id, seller_id, price, reference, payment_status, transaction_date})
         return JSON.parse(JSON.stringify(newTransaction))
     } catch (error) {
         throw new Error(`Error adding a new transaction: ${error}`)
@@ -35,7 +31,9 @@ export async function createData(buyer_id: number, property_id: number, seller_i
             "seller_id": seller_id,
             "email": email,
             "amount": price * 100,
-            // "payment_status": order.dataValues.payment_status
+            "payment_status": "Pending",
+            "subaccount": subAccount,
+            "bearer": "subaccount"
         })
         return data
     } catch (error) {

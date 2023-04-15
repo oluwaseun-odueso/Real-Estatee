@@ -40,10 +40,11 @@ async function addProperty(req, res) {
             return;
         }
         ;
-        const { description, type, street, city, state, country, price, payment_status } = req.body;
+        const { description, type, street, city, state, country, price } = req.body;
         const address = await (0, addressFunctions_1.addAddress)({ street, city, state, country });
         const address_id = address.id;
         const seller_id = req.seller.id;
+        const payment_status = "Available";
         const property = await (0, propertyFunctions_1.createProperty)({ seller_id, address_id, description, type, price, payment_status });
         res.status(201).send({ success: true, message: "You have successfully put up a new property for sale", property });
     }

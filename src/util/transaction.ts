@@ -37,4 +37,4 @@ class Transaction {
     }
 }
 
-module.exports = new Transaction
+export default new Transaction

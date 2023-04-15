@@ -17,16 +17,20 @@ Transaction.init({
       type: DataTypes.NUMBER,
       allowNull: false
     },
+    price: {
+      type: DataTypes.NUMBER,
+      allowNull: false
+    },
+    reference: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
     payment_status: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    payment_method: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
     transaction_date: {
-      type: DataTypes.STRING
+      type: DataTypes.DATE
     }
   }, {
     // Other model options go here
