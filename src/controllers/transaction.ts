@@ -2,7 +2,7 @@ import {Request, Response} from 'express';
 import dotenv from 'dotenv';
 import { getPropertyById } from '../functions/propertyFunctions';
 import { getBuyerById } from '../functions/buyerFunctions';
-import {createData, createTransaction} from '../functions/transactionFunctions'
+import {createData, createTransaction, getTransactionById} from '../functions/transactionFunctions'
 import Transaction from '../util/transaction';
 
 dotenv.config();
@@ -23,8 +23,31 @@ export const initiateTransaction = async(req: Request, res: Response) => {
     } catch (error: any) {
         return res.status(500).json({
             success: false,
-            message: 'Error initiating transaction.',
+            message: 'Error initiating transaction',
             error: error.message
         });
-    }
-}
+    };
+};
+
+export async function getTransaction(req: Request, res: Response) {
+    try {
+        const transaction = await getTransactionById(parseInt(req.params.transaction_id, 10))
+        if (!transaction) {
+            res.status(400).send({
+                success: false,
+                message: "Transaction not found"
+            });
+            return;
+        };
+        res.status(200).send({ 
+            success: true,
+            transaction
+        })
+    } catch (error: any) {
+        return res.status(500).json({
+            success: false,
+            message: 'Error getting transaction',
+            error: error.message
+        });
+    };
+};

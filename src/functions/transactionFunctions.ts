@@ -37,6 +37,18 @@ export async function createData(buyer_id: number, property_id: number, seller_i
         })
         return data
     } catch (error) {
-        return error
+        throw new Error(`Error creating transaction data: ${error}`)
+    };
+};
+
+export async function getTransactionById (id: number): Promise<TransactionType> {
+    try {
+        const transaction = await Transaction.findOne({
+            attributes: { exclude: ['createdAt', 'updatedAt']},
+            where: { id }
+        });
+        return JSON.parse(JSON.stringify(transaction))
+    } catch (error) {
+        throw new Error(`Error getting transaction by id: ${error}`)
     }
-}
+};
