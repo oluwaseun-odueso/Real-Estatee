@@ -9,7 +9,7 @@ dotenv.config();
 
 export const initiateTransaction = async(req: Request, res: Response) => {
     try {
-        const property = await getPropertyById(parseInt(req.params.id, 10))
+        const property = await getPropertyById(parseInt(req.params.property_id, 10))
         const buyer = await getBuyerById(req.buyer.id)
         const data = await createData(req.buyer.id, property.id, property.seller_id, buyer.email, property.price)
         const payment = await Transaction.initializeTransaction(data)

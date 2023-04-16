@@ -2,6 +2,7 @@ import express, { Application, Request, Response, NextFunction} from 'express';
 import sellerRoutes from './routes/seller';
 import propertyRoutes from './routes/property';
 import buyerRoutes from './routes/buyer';
+import transactionRoutes from './routes/transaction';
 import cors from 'cors'; 
 import dotenv from 'dotenv';
 import AWS from 'aws-sdk'
@@ -71,7 +72,8 @@ app.post('/upload', upload.single('image'), async (req: Request, res: Response) 
 
 app.use('/seller', sellerRoutes);
 app.use('/property', propertyRoutes);
-app.use('/buyer', buyerRoutes)
+app.use('/buyer', buyerRoutes);
+app.use('/transaction', transactionRoutes);
 
 app.get('/', (req: Request, res: Response) => {
     res.status(200).send({success: true, message: " Official Real Estate Page"});
