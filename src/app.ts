@@ -5,8 +5,6 @@ import buyerRoutes from './routes/buyer';
 import transactionRoutes from './routes/transaction';
 import cors from 'cors'; 
 import dotenv from 'dotenv';
-import AWS from 'aws-sdk'
-import multer from 'multer';
 
 dotenv.config();
 
