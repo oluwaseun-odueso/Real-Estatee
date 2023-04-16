@@ -4,7 +4,7 @@ require('dotenv').config();
 class Transaction {
     secret_key: string | undefined;
     constructor () {
-        this.secret_key = process.env.PAYSTACK_TOKEN
+        this.secret_key = process.env.PAYSTACK_TOKEN!
     }
 
     async initializeTransaction (data: any) {

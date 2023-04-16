@@ -52,3 +52,14 @@ export async function getTransactionById (id: number): Promise<TransactionType> 
         throw new Error(`Error getting transaction by id: ${error}`)
     }
 };
+
+export async function updateTransactionStatus(reference: string, payment_status: string) {
+    try {
+        const updatedTransactionStatus = await Transaction.update({payment_status}, {
+            where: { reference }
+        })
+        return updatedTransactionStatus
+    } catch (error) {
+        return error
+    }
+}

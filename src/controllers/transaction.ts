@@ -1,13 +1,15 @@
 import {Request, Response} from 'express';
 import dotenv from 'dotenv';
+import crypto from 'crypto';
 import { getPropertyById } from '../functions/propertyFunctions';
 import { getBuyerById } from '../functions/buyerFunctions';
-import {createData, createTransaction, getTransactionById} from '../functions/transactionFunctions'
+import {createData, createTransaction, getTransactionById, updateTransactionStatus} from '../functions/transactionFunctions'
 import Transaction from '../util/transaction';
 
 dotenv.config();
+const secret = process.env.PAYSTACK_TOKEN!;
 
-export const initiateTransaction = async(req: Request, res: Response) => {
+export async function initiateTransaction (req: Request, res: Response) {
     try {
         const property = await getPropertyById(parseInt(req.params.property_id, 10))
         const buyer = await getBuyerById(req.buyer.id)
@@ -29,7 +31,7 @@ export const initiateTransaction = async(req: Request, res: Response) => {
     };
 };
 
-export async function getTransaction(req: Request, res: Response) {
+export async function getTransaction (req: Request, res: Response) {
     try {
         const transaction = await getTransactionById(parseInt(req.params.transaction_id, 10))
         if (!transaction) {
@@ -51,3 +53,27 @@ export async function getTransaction(req: Request, res: Response) {
         });
     };
 };
+
+export async function updateTransaction (req: Request, res: Response) {
+    try {
+        const hash = crypto.createHmac('sha512', secret).update(JSON.stringify(req.body)).digest('hex');
+        if (hash == req.headers['x-paystack-signature']) {
+            const event = req.body
+            if (event.event == "charge.success") {
+                await updateTransactionStatus(event.data.reference, "paid")
+                res.status(200).send({success: true, message: "Payment sucessful"})
+                return
+            }
+        }
+        res.status(200).json({
+            success: false,
+            message: "Payment failed"
+        });
+    } catch (error: any) {
+        res.status(500).json({
+            success: false,
+            message: "Error updating transaction",
+            error: error.message
+        })
+    }
+}
