@@ -9,7 +9,7 @@ const sellerAuth_1 = require("../auth/sellerAuth");
 const addressFunctions_1 = require("../functions/addressFunctions");
 const sellerFunctions_1 = require("../functions/sellerFunctions");
 const mail_1 = require("../util/mail");
-const image_config_1 = require("../image.config");
+const image_config_1 = require("../util/image.config");
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 async function signUpSeller(req, res) {
@@ -344,11 +344,11 @@ async function deleteImage(req, res) {
             Key: imageKey,
         };
         await image_config_1.s3.deleteObject(deleteParams).promise();
+        await (0, sellerFunctions_1.deleteSellerImage)(req.seller.id);
         res.json({
             success: true,
             message: 'Image deleted.'
         });
-        await (0, sellerFunctions_1.deleteSellerImage)(req.seller.id);
     }
     catch (error) {
         return res.status(500).json({

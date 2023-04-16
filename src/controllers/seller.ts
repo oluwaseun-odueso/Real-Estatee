@@ -24,7 +24,7 @@ import {
     getSellerImageKey
 } from '../functions/sellerFunctions'
 import { mail } from '../util/mail';
-import { s3 } from "../image.config"
+import { s3 } from "../util/image.config"
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -340,11 +340,11 @@ export async function deleteImage (req: Request, res: Response) {
         };
 
         await s3.deleteObject(deleteParams).promise();
+        await deleteSellerImage(req.seller.id)
         res.json({ 
             success: true, 
             message: 'Image deleted.' 
         });
-        await deleteSellerImage(req.seller.id)
     } catch (error: any) {
         return res.status(500).json({ 
             success: false, 

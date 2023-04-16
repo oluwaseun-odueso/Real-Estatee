@@ -1,4 +1,3 @@
-import { MediaPackage } from 'aws-sdk';
 import {Request, Response} from 'express';
 import { addAddress, deletePropertyAddress, updateAddressDetails } from '../functions/addressFunctions';
 import { deletePropertyFeatures } from '../functions/propertyFeaturesFunctions';
@@ -12,8 +11,12 @@ import {
     QueryParam, 
     updatePropertyDetails
     } from '../functions/propertyFunctions';
-import { createPropertyImage } from '../functions/propertyImagesFunctions';
-import { s3 } from '../image.config';
+import { 
+    createPropertyImage, 
+    deletePropertyImages, 
+    getKeyArray
+} from '../functions/propertyImagesFunctions';
+import { s3 } from '../util/image.config';
 
 export async function getProperties(req: Request, res: Response) {
     try {
@@ -50,7 +53,8 @@ export async function addProperty(req: Request, res: Response) {
         const address = await addAddress({street, city, state, country});
         const address_id = address.id;
         const seller_id = req.seller.id
-        const property = await createProperty({seller_id, address_id, description, type, price})
+        const payment_status = "Available"
+        const property = await createProperty({seller_id, address_id, description, type, price, payment_status})
         res.status(201).send({ success: true, message : "You have successfully put up a new property for sale", property})   
     } catch (error: any) {
         return res.status(500).json({
@@ -196,7 +200,7 @@ export async function uploadImages (req: Request, res: Response) {
 };
 
 export async function deleteImages (req: Request, res: Response) {
-    const imageKeys: any = req.body;
+    const imageKeys: { Key: string }[] = req.body;
     try {
         // Delete the image from S3
         const deleteParams = {
@@ -214,6 +218,9 @@ export async function deleteImages (req: Request, res: Response) {
               res.json({ message: 'Images deleted successfully' });
             }
           });
+        
+        const image_key_array: string[] = getKeyArray(imageKeys)
+        await deletePropertyImages(image_key_array)
     } catch (error: any) {
         return res.status(500).json({ 
             success: false, 
@@ -222,3 +229,17 @@ export async function deleteImages (req: Request, res: Response) {
         });    
     };
 };
+
+// const imageKey = [
+//     {user: "Umi"},
+//     {user: "Kimi"},
+//     {user: "Ikongbe"}
+// ]
+
+// const keyArray: string[] = []
+
+// imageKey.forEach(object => {
+//     keyArray.push(object['user'])
+// })
+
+// console.log(keyArray)

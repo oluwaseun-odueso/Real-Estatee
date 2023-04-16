@@ -20,7 +20,7 @@ import {
     updateBuyerAccountDetails,
     updatePassword
 } from '../functions/buyerFunctions';
-import { s3 } from '../image.config';
+import { s3 } from '../util/image.config';
 import { mail } from '../util/mail';
 
 export async function signUpBuyer (req: Request, res: Response) {
@@ -344,11 +344,11 @@ export async function deleteImage (req: Request, res: Response) {
         };
 
         await s3.deleteObject(deleteParams).promise();
+        await deleteBuyerImage(req.buyer.id)
         res.json({ 
             success: true, 
             message: 'Image deleted.' 
         });
-        await deleteBuyerImage(req.buyer.id)
     } catch (error: any) {
         return res.status(500).json({ 
             success: false, 

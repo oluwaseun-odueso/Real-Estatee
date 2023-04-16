@@ -8,7 +8,7 @@ const sellerAuth_1 = require("../auth/sellerAuth");
 const property_1 = require("../controllers/property");
 const propertyFeature_1 = require("../controllers/propertyFeature");
 const seller_1 = require("../controllers/seller");
-const image_config_1 = require("../image.config");
+const image_config_1 = require("../util/image.config");
 const router = express_1.default.Router();
 router.post('/put_property_for_sale', sellerAuth_1.verifySellerToken, property_1.addProperty);
 router.post('/add_property_features/:id', sellerAuth_1.verifySellerToken, propertyFeature_1.addPropertyFeature);

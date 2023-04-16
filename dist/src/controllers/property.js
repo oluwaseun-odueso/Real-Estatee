@@ -5,7 +5,7 @@ const addressFunctions_1 = require("../functions/addressFunctions");
 const propertyFeaturesFunctions_1 = require("../functions/propertyFeaturesFunctions");
 const propertyFunctions_1 = require("../functions/propertyFunctions");
 const propertyImagesFunctions_1 = require("../functions/propertyImagesFunctions");
-const image_config_1 = require("../image.config");
+const image_config_1 = require("../util/image.config");
 async function getProperties(req, res) {
     try {
         const queries = {
@@ -44,7 +44,8 @@ async function addProperty(req, res) {
         const address = await (0, addressFunctions_1.addAddress)({ street, city, state, country });
         const address_id = address.id;
         const seller_id = req.seller.id;
-        const property = await (0, propertyFunctions_1.createProperty)({ seller_id, address_id, description, type, price });
+        const payment_status = "Available";
+        const property = await (0, propertyFunctions_1.createProperty)({ seller_id, address_id, description, type, price, payment_status });
         res.status(201).send({ success: true, message: "You have successfully put up a new property for sale", property });
     }
     catch (error) {
@@ -220,6 +221,8 @@ async function deleteImages(req, res) {
                 res.json({ message: 'Images deleted successfully' });
             }
         });
+        const image_key_array = (0, propertyImagesFunctions_1.getKeyArray)(imageKeys);
+        await (0, propertyImagesFunctions_1.deletePropertyImages)(image_key_array);
     }
     catch (error) {
         return res.status(500).json({
@@ -232,3 +235,13 @@ async function deleteImages(req, res) {
 }
 exports.deleteImages = deleteImages;
 ;
+// const imageKey = [
+//     {user: "Umi"},
+//     {user: "Kimi"},
+//     {user: "Ikongbe"}
+// ]
+// const keyArray: string[] = []
+// imageKey.forEach(object => {
+//     keyArray.push(object['user'])
+// })
+// console.log(keyArray)

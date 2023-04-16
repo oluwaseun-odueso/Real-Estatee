@@ -16,3 +16,22 @@ export async function createPropertyImage(propertyImageDetails: PropertyImagesTy
     };
 };
 
+export async function deletePropertyImages (image_key: string[]): Promise<number> {
+    try {
+        const deletedPropertyDetails = await PropertyImages.destroy({
+            where: {image_key}
+        })
+        return deletedPropertyDetails;
+    } catch (error) {
+        throw new Error(`Error deleting Images details: ${error}`)
+    }
+};
+
+export function getKeyArray (input: { Key: string }[]): string[] {
+    const keyArray: string[] = []
+    input.forEach(object => {
+        keyArray.push(object['Key'])
+    })
+
+    return keyArray
+};

@@ -1,35 +1,39 @@
 import {DataTypes, Model} from 'sequelize';
 import sequelize from '../connection/database';
 
-export class Property extends Model {}
+export class Transaction extends Model {}
 
-Property.init({
+Transaction.init({
     // Model attributes are defined here
+    property_id: {
+      type: DataTypes.NUMBER,
+      allowNull: false
+    },
+    buyer_id: {
+      type: DataTypes.NUMBER,
+      allowNull: false
+    },
     seller_id: {
       type: DataTypes.NUMBER,
       allowNull: false
     },
-    address_id: {
+    price: {
       type: DataTypes.NUMBER,
       allowNull: false
     },
-    description: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    type: {
-      type: DataTypes.STRING,
-    },
-    price: {
+    reference: {
       type: DataTypes.STRING,
       allowNull: false
     },
     payment_status: {
       type: DataTypes.STRING,
-      allowNull: true
+      allowNull: false
+    },
+    transaction_date: {
+      type: DataTypes.DATE
     }
   }, {
     // Other model options go here
     sequelize, // We need to pass the connection instance
-    modelName: 'Property' 
+    modelName: 'Transaction' 
   });

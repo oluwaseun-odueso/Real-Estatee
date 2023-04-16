@@ -7,6 +7,7 @@ const express_1 = __importDefault(require("express"));
 const seller_1 = __importDefault(require("./routes/seller"));
 const property_1 = __importDefault(require("./routes/property"));
 const buyer_1 = __importDefault(require("./routes/buyer"));
+const transaction_1 = __importDefault(require("./routes/transaction"));
 const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const aws_sdk_1 = __importDefault(require("aws-sdk"));
@@ -68,6 +69,7 @@ app.post('/upload', upload.single('image'), async (req, res) => {
 app.use('/seller', seller_1.default);
 app.use('/property', property_1.default);
 app.use('/buyer', buyer_1.default);
+app.use('/transaction', transaction_1.default);
 app.get('/', (req, res) => {
     res.status(200).send({ success: true, message: " Official Real Estate Page" });
 });

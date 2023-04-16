@@ -29,6 +29,10 @@ Property.init({
     price: {
         type: sequelize_1.DataTypes.STRING,
         allowNull: false
+    },
+    payment_status: {
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: true
     }
 }, {
     // Other model options go here
