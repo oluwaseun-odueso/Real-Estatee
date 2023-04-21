@@ -24,7 +24,7 @@ export async function mail(recipient: string) {
     subject: "Reset password - Real Estatery",
     // text: "Reset your password with the token below: " + token,
     html: `<div>
-    <p>Dear User, click the button below to reset your password</p>
+    <p>Dear User, you requested to reset your password. Please, click the button below to reset your password</p>
     <a
       href="https://real-estate-collab.vercel.app/auth/reset-password?token=${token}"
       >Reset Password</a

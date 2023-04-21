@@ -45,3 +45,12 @@ next: NextFunction
     }
 }
   
+export async function verifyForgotPasswordToken2 (token: string): Promise<string> {
+  try {
+    const decodedToken: any = jwt.verify(token, forgotPasswordKey);
+    console.log(decodedToken)
+    return decodedToken.email;
+  } catch (error: any) {
+    throw new Error(`Error verifying forgot password token: ${error.message}`)
+  }
+}

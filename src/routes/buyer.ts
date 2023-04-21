@@ -33,5 +33,6 @@ router.post('/upload_image', verifyBuyerToken, upload.single('image'), uploadIma
 router.get('/get_image/:filename', getImage);
 router.delete('/delete_image', verifyBuyerToken, deleteImage)
 router.post('/forgot_password', forgotBuyerPassword);
+router.post('/change_forgot_password', verifyForgotPasswordToken)
 
 export default router;

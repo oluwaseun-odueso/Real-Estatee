@@ -365,3 +365,22 @@ export async function forgotBuyerPassword (req: Request, res: Response) {
     };
 };
 
+export async function changeForgotPassword (req: Request, res: Response) {
+    try {
+        if (!req.body.new_password) {
+            res.status(400).json({ 
+                success: false, 
+                message: "Please enter a new password"
+            });
+            return;
+        };
+        const new_hashed_password = await hashBuyerPassword(req.body.new_password);
+        await updatePassword(req.buyer.id, new_hashed_password)
+    } catch (error: any) {
+        return res.status(500).json({
+            success: false,
+            message: 'Unable to set new password',
+            error: error.message
+        });
+    }
+}

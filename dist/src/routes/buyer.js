@@ -8,6 +8,7 @@ const express_validator_1 = require("express-validator");
 const buyerAuth_1 = require("../auth/buyerAuth");
 const buyer_1 = require("../controllers/buyer");
 const image_config_1 = require("../util/image.config");
+const resetPasswordAuth_1 = require("../auth/resetPasswordAuth");
 const router = express_1.default.Router();
 router.post('/signup', (0, express_validator_1.body)('email').isEmail(), (0, express_validator_1.body)('password')
     .isLength({ min: 8 })
@@ -21,4 +22,5 @@ router.post('/upload_image', buyerAuth_1.verifyBuyerToken, image_config_1.upload
 router.get('/get_image/:filename', buyer_1.getImage);
 router.delete('/delete_image', buyerAuth_1.verifyBuyerToken, buyer_1.deleteImage);
 router.post('/forgot_password', buyer_1.forgotBuyerPassword);
+router.post('/change_forgot_password', resetPasswordAuth_1.verifyForgotPasswordToken);
 exports.default = router;

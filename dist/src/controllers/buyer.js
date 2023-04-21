@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.forgotBuyerPassword = exports.updateBuyerPassword = exports.deleteImage = exports.getImage = exports.uploadImage = exports.deleteBuyerAccount = exports.getBuyerAccount = exports.updateBuyerAccount = exports.loginBuyer = exports.signUpBuyer = void 0;
+exports.changeForgotPassword = exports.forgotBuyerPassword = exports.updateBuyerPassword = exports.deleteImage = exports.getImage = exports.uploadImage = exports.deleteBuyerAccount = exports.getBuyerAccount = exports.updateBuyerAccount = exports.loginBuyer = exports.signUpBuyer = void 0;
 const express_validator_1 = require("express-validator");
 const buyerAuth_1 = require("../auth/buyerAuth");
 const addressFunctions_1 = require("../functions/addressFunctions");
@@ -375,3 +375,25 @@ async function forgotBuyerPassword(req, res) {
 }
 exports.forgotBuyerPassword = forgotBuyerPassword;
 ;
+async function changeForgotPassword(req, res) {
+    try {
+        if (!req.body.new_password) {
+            res.status(400).json({
+                success: false,
+                message: "Please enter a new password"
+            });
+            return;
+        }
+        ;
+        const new_hashed_password = await (0, buyerFunctions_1.hashBuyerPassword)(req.body.new_password);
+        await (0, buyerFunctions_1.updatePassword)(req.buyer.id, new_hashed_password);
+    }
+    catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Unable to set new password',
+            error: error.message
+        });
+    }
+}
+exports.changeForgotPassword = changeForgotPassword;
