@@ -212,38 +212,6 @@ export async function deleteAccount (req: Request, res: Response) {
     };
 };
 
-export async function updateSellerPassword (req: Request, res: Response) {
-    try {
-        if (!req.body.current_password || !req.body.new_password) {
-            res.status(400).json({ 
-                success: false, 
-                message: "Please enter your current password and a new password"
-            });
-            return;
-        };
-        
-        const {current_password, new_password} = req.body;
-        const collectedSellerPassword = await retrieveSellerHashedPassword(req.seller.email)
-        if (await confirmSellerRetrievedPassword(current_password, collectedSellerPassword) !== true) {
-            res.status(400).json({ success: false, message: "Current password is incorrect"})
-            return;
-        };
-
-        const new_hashed_password = await hashPassword(new_password);
-        await updatePassword(req.seller.id, new_hashed_password)
-        res.status(200).json({
-            success: true,
-            message: 'Your password has been updated!', 
-        });
-    } catch (error: any) {
-        return res.status(500).json({
-            success: false,
-            message: 'Error updating password',
-            error: error.message
-        });
-    };
-};
-
 export async function uploadImage (req: Request, res: Response) {
     const file: any = req.file;
     if (!file) {
@@ -336,6 +304,38 @@ export async function deleteImage (req: Request, res: Response) {
             message: 'Unable to delete image',
             error: error.message
         });    
+    };
+};
+
+export async function updateSellerPassword (req: Request, res: Response) {
+    try {
+        if (!req.body.current_password || !req.body.new_password) {
+            res.status(400).json({ 
+                success: false, 
+                message: "Please enter your current password and a new password"
+            });
+            return;
+        };
+        
+        const {current_password, new_password} = req.body;
+        const collectedSellerPassword = await retrieveSellerHashedPassword(req.seller.email)
+        if (await confirmSellerRetrievedPassword(current_password, collectedSellerPassword) !== true) {
+            res.status(400).json({ success: false, message: "Current password is incorrect"})
+            return;
+        };
+
+        const new_hashed_password = await hashPassword(new_password);
+        await updatePassword(req.seller.id, new_hashed_password)
+        res.status(200).json({
+            success: true,
+            message: 'Your password has been updated!', 
+        });
+    } catch (error: any) {
+        return res.status(500).json({
+            success: false,
+            message: 'Error updating password',
+            error: error.message
+        });
     };
 };
 
