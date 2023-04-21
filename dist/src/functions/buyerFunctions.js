@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteBuyerImage = exports.deleteAccount = exports.updatePassword = exports.updateBuyerAccountDetails = exports.checkIfEntriesMatch = exports.saveBuyerImageUrlAndKey = exports.getFullBuyerDetails = exports.confirmBuyerRetrievedPassword = exports.retrieveBuyerHashedPassword = exports.getBuyerImageKey = exports.getBuyerById = exports.getBuyerByEmail = exports.hashBuyerPassword = exports.checkBuyerPhoneNumber = exports.checkBuyerEmail = exports.createBuyer = void 0;
+exports.deleteBuyerImage = exports.deleteAccount = exports.updateBuyerPasswordByEmail = exports.updatePassword = exports.updateBuyerAccountDetails = exports.checkIfEntriesMatch = exports.saveBuyerImageUrlAndKey = exports.getFullBuyerDetails = exports.confirmBuyerRetrievedPassword = exports.retrieveBuyerHashedPassword = exports.getBuyerImageKey = exports.getBuyerById = exports.getBuyerByEmail = exports.hashBuyerPassword = exports.checkBuyerPhoneNumber = exports.checkBuyerEmail = exports.createBuyer = void 0;
 const buyer_1 = require("../models/buyer");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const addressFunctions_1 = require("./addressFunctions");
@@ -191,6 +191,19 @@ async function updatePassword(id, hashed_password) {
     }
 }
 exports.updatePassword = updatePassword;
+;
+async function updateBuyerPasswordByEmail(email, hashed_password) {
+    try {
+        const updatedPassword = await buyer_1.Buyer.update({ hashed_password }, {
+            where: { email }
+        });
+        return updatedPassword;
+    }
+    catch (error) {
+        throw new Error(`Error updating buyer's password by email: ${error}`);
+    }
+}
+exports.updateBuyerPasswordByEmail = updateBuyerPasswordByEmail;
 async function deleteAccount(id) {
     try {
         const deletedAccount = await buyer_1.Buyer.destroy({

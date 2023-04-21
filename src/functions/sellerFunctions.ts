@@ -162,6 +162,17 @@ export async function updatePassword (id: number, hashed_password: string) {
     }
 }
 
+export async function updateSellerPasswordByEmail (email: string, hashed_password: string) {
+    try {
+        const updatedPassword = await Seller.update({hashed_password}, {
+            where: {email}
+        })
+        return updatedPassword
+    } catch (error) {
+        throw new Error(`Error updating seller's password by email: ${error}`)
+    }
+}
+
 export async function deleteSellerAccount(id: number): Promise<number> {
     try {
         const deletedAccount = await Seller.destroy({

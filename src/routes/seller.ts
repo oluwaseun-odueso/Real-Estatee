@@ -8,7 +8,8 @@ import {
     getImage,
     getSellerAccount,
     loginSeller, 
-    resetSellerPassword, 
+    requestSellerPasswordReset, 
+    resetPassword, 
     signUpSeller, 
     updateSellerAccount,
     updateSellerPassword,
@@ -29,10 +30,11 @@ router.post('/login', body('email').isEmail(), loginSeller);
 router.put('/update_account', verifySellerToken, updateSellerAccount);
 router.get('/get_account', verifySellerToken, getSellerAccount);
 router.delete('/delete_account', verifySellerToken, deleteAccount);
-router.put('/update_password', verifySellerToken, updateSellerPassword);
 router.post('/upload_image', verifySellerToken, upload.single('image'), uploadImage)
 router.get('/get_image/:filename', getImage)
 router.delete('/delete_image', verifySellerToken, deleteImage)
-router.post('/reset_password', verifySellerToken, resetSellerPassword)
+router.put('/update_password', verifySellerToken, updateSellerPassword);
+router.post('/request_password_reset', requestSellerPasswordReset)
+router.post('/reset_password', resetPassword)
 
 export default router;

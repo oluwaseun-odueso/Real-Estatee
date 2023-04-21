@@ -7,7 +7,8 @@ import {
     getBuyerAccount,
     getImage,
     loginBuyer,
-    resetBuyerPassword,
+    requestBuyerPasswordReset,
+    resetPassword,
     signUpBuyer, 
     updateBuyerAccount,
     updateBuyerPassword,
@@ -31,6 +32,7 @@ router.put('/update_password', verifyBuyerToken, updateBuyerPassword);
 router.post('/upload_image', verifyBuyerToken, upload.single('image'), uploadImage);
 router.get('/get_image/:filename', getImage);
 router.delete('/delete_image', verifyBuyerToken, deleteImage)
-router.post('/reset_password', verifyBuyerToken, resetBuyerPassword);
+router.post('/request_password_reset', requestBuyerPasswordReset);
+router.post('/reset_password', resetPassword)
 
 export default router;

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteSellerImage = exports.saveSellerImageUrlAndKey = exports.deleteSellerAccount = exports.updatePassword = exports.updateSellerAccountDetails = exports.checkIfEntriesMatch = exports.getFullSellerDetails = exports.getSellerWithoutAddressId = exports.getSellerById = exports.confirmSellerRetrievedPassword = exports.getSellerImageKey = exports.retrieveSellerHashedPassword = exports.getSellerByEmail = exports.hashPassword = exports.checkPhoneNumber = exports.checkEmail = exports.createSeller = void 0;
+exports.deleteSellerImage = exports.saveSellerImageUrlAndKey = exports.deleteSellerAccount = exports.updateSellerPasswordByEmail = exports.updatePassword = exports.updateSellerAccountDetails = exports.checkIfEntriesMatch = exports.getFullSellerDetails = exports.getSellerWithoutAddressId = exports.getSellerById = exports.confirmSellerRetrievedPassword = exports.getSellerImageKey = exports.retrieveSellerHashedPassword = exports.getSellerByEmail = exports.hashPassword = exports.checkPhoneNumber = exports.checkEmail = exports.createSeller = void 0;
 const seller_1 = require("../models/seller");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const addressFunctions_1 = require("./addressFunctions");
@@ -191,6 +191,18 @@ async function updatePassword(id, hashed_password) {
     }
 }
 exports.updatePassword = updatePassword;
+async function updateSellerPasswordByEmail(email, hashed_password) {
+    try {
+        const updatedPassword = await seller_1.Seller.update({ hashed_password }, {
+            where: { email }
+        });
+        return updatedPassword;
+    }
+    catch (error) {
+        throw new Error(`Error updating seller's password by email: ${error}`);
+    }
+}
+exports.updateSellerPasswordByEmail = updateSellerPasswordByEmail;
 async function deleteSellerAccount(id) {
     try {
         const deletedAccount = await seller_1.Seller.destroy({
