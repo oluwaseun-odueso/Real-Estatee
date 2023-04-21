@@ -21,4 +21,5 @@ router.get('/get_image/:filename', seller_1.getImage);
 router.delete('/delete_image', sellerAuth_1.verifySellerToken, seller_1.deleteImage);
 router.put('/update_password', sellerAuth_1.verifySellerToken, seller_1.updateSellerPassword);
 router.post('/request_password_reset', seller_1.requestSellerPasswordReset);
+router.post('/reset_password', seller_1.resetPassword);
 exports.default = router;

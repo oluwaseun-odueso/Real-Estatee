@@ -21,7 +21,8 @@ import {
     saveSellerImageUrlAndKey,
     deleteSellerImage,
     getSellerImageKey,
-    updatePassword
+    updatePassword,
+    updateSellerPasswordByEmail
 } from '../functions/sellerFunctions'
 import { mail } from '../util/mail';
 import { s3 } from "../util/image.config"
@@ -366,3 +367,29 @@ export async function requestSellerPasswordReset (req: Request, res: Response) {
     };
 };
 
+export async function resetPassword (req: Request, res: Response) {
+    try {
+        if (!req.body.new_password || !req.body.reset_token) {
+            res.status(400).json({ 
+                success: false, 
+                message: "Please enter a new password and token"
+            });
+            return;
+        };
+
+        const email = await verifyForgotPasswordToken(req.body.reset_token)
+
+        const new_hashed_password = await hashPassword(req.body.new_password);
+        await updateSellerPasswordByEmail(email, new_hashed_password)
+        res.status(200).send({
+            success: true,
+            message: "You have successfully reset your password"
+        });
+    } catch (error: any) {
+        return res.status(500).json({
+            success: false,
+            message: 'Unable to set new password',
+            error: error.message
+        });
+    }
+}

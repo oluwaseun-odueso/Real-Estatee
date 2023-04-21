@@ -9,6 +9,7 @@ import {
     getSellerAccount,
     loginSeller, 
     requestSellerPasswordReset, 
+    resetPassword, 
     signUpSeller, 
     updateSellerAccount,
     updateSellerPassword,
@@ -34,5 +35,6 @@ router.get('/get_image/:filename', getImage)
 router.delete('/delete_image', verifySellerToken, deleteImage)
 router.put('/update_password', verifySellerToken, updateSellerPassword);
 router.post('/request_password_reset', requestSellerPasswordReset)
+router.post('/reset_password', resetPassword)
 
 export default router;

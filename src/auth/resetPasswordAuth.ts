@@ -26,7 +26,7 @@ export async function verifyForgotPasswordToken (token: string): Promise<string>
     const decodedToken: any = jwt.verify(token, forgotPasswordKey);
     return decodedToken.email;
   } catch (error: any) {
-    throw new Error("Invalid or expired reset password token")
+    throw new Error(`Invalid or expired reset password token: ${error.message}`)
     // throw new Error(`Error verifying forgot password token: ${error.message}`)
   }
 }

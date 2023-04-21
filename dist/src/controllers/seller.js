@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.requestSellerPasswordReset = exports.deleteImage = exports.getImage = exports.uploadImage = exports.updateSellerPassword = exports.deleteAccount = exports.getSellerAccount = exports.updateSellerAccount = exports.loginSeller = exports.signUpSeller = void 0;
+exports.resetPassword = exports.requestSellerPasswordReset = exports.deleteImage = exports.getImage = exports.uploadImage = exports.updateSellerPassword = exports.deleteAccount = exports.getSellerAccount = exports.updateSellerAccount = exports.loginSeller = exports.signUpSeller = void 0;
 const express_validator_1 = require("express-validator");
 const sellerAuth_1 = require("../auth/sellerAuth");
 const addressFunctions_1 = require("../functions/addressFunctions");
@@ -11,6 +11,7 @@ const sellerFunctions_1 = require("../functions/sellerFunctions");
 const mail_1 = require("../util/mail");
 const image_config_1 = require("../util/image.config");
 const dotenv_1 = __importDefault(require("dotenv"));
+const resetPasswordAuth_1 = require("../auth/resetPasswordAuth");
 dotenv_1.default.config();
 async function signUpSeller(req, res) {
     const errors = (0, express_validator_1.validationResult)(req);
@@ -374,3 +375,30 @@ async function requestSellerPasswordReset(req, res) {
 }
 exports.requestSellerPasswordReset = requestSellerPasswordReset;
 ;
+async function resetPassword(req, res) {
+    try {
+        if (!req.body.new_password || !req.body.reset_token) {
+            res.status(400).json({
+                success: false,
+                message: "Please enter a new password and token"
+            });
+            return;
+        }
+        ;
+        const email = await (0, resetPasswordAuth_1.verifyForgotPasswordToken)(req.body.reset_token);
+        const new_hashed_password = await (0, sellerFunctions_1.hashPassword)(req.body.new_password);
+        await (0, sellerFunctions_1.updateSellerPasswordByEmail)(email, new_hashed_password);
+        res.status(200).send({
+            success: true,
+            message: "You have successfully reset your password"
+        });
+    }
+    catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Unable to set new password',
+            error: error.message
+        });
+    }
+}
+exports.resetPassword = resetPassword;
