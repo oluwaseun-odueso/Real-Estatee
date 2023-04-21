@@ -18,10 +18,12 @@ import {
     retrieveBuyerHashedPassword,
     saveBuyerImageUrlAndKey,
     updateBuyerAccountDetails,
+    updateBuyerPasswordByEmail,
     updatePassword
 } from '../functions/buyerFunctions';
 import { s3 } from '../util/image.config';
 import { mail } from '../util/mail';
+import { verifyForgotPasswordToken } from '../auth/resetPasswordAuth';
 
 export async function signUpBuyer (req: Request, res: Response) {
     const errors = validationResult(req)
@@ -341,7 +343,7 @@ export async function updateBuyerPassword (req: Request, res: Response) {
     };
 };
 
-export async function forgotBuyerPassword (req: Request, res: Response) {
+export async function requestPasswordReset (req: Request, res: Response) {
     try {
         if (!req.body.email) {
             res.status(400).json({ 
@@ -350,11 +352,15 @@ export async function forgotBuyerPassword (req: Request, res: Response) {
             });
             return;
         };
-        
+        const buyerDetails = await getBuyerByEmail(req.body.email);
+        if (!buyerDetails) {
+            res.status(400).send({ success: false, message: "Please enter a registered email"})
+            return;
+        };
         await mail(req.body.email)
         res.status(200).send({
             success: true,
-            message: "A reset token has been sent to your registered email"
+            message: "A reset password instruction has been sent to your registered email"
         });
     } catch (error: any) {
         return res.status(500).json({
@@ -365,17 +371,29 @@ export async function forgotBuyerPassword (req: Request, res: Response) {
     };
 };
 
-export async function changeForgotPassword (req: Request, res: Response) {
+export async function resetPassword (req: Request, res: Response) {
     try {
-        if (!req.body.new_password) {
+        if (!req.body.new_password || !req.body.reset_token) {
             res.status(400).json({ 
                 success: false, 
-                message: "Please enter a new password"
+                message: "Please enter a new password and token"
             });
             return;
         };
+
+        const email = await verifyForgotPasswordToken(req.body.reset_token)
+        // if(!email) {
+        //     res.status(400).json({
+        //         success: false,
+        //         message: "Invalid or expired reset password token"
+        //     })
+        // }
         const new_hashed_password = await hashBuyerPassword(req.body.new_password);
-        await updatePassword(req.buyer.id, new_hashed_password)
+        await updateBuyerPasswordByEmail(email, new_hashed_password)
+        res.status(200).send({
+            success: true,
+            message: "You have successfully reset your password"
+        });
     } catch (error: any) {
         return res.status(500).json({
             success: false,

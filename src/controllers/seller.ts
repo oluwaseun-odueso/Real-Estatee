@@ -19,9 +19,9 @@ import {
     updateSellerAccountDetails,
     deleteSellerAccount,
     saveSellerImageUrlAndKey,
-    updatePassword,
     deleteSellerImage,
-    getSellerImageKey
+    getSellerImageKey,
+    updatePassword
 } from '../functions/sellerFunctions'
 import { mail } from '../util/mail';
 import { s3 } from "../util/image.config"

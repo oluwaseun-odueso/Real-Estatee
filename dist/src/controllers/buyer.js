@@ -1,12 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.changeForgotPassword = exports.forgotBuyerPassword = exports.updateBuyerPassword = exports.deleteImage = exports.getImage = exports.uploadImage = exports.deleteBuyerAccount = exports.getBuyerAccount = exports.updateBuyerAccount = exports.loginBuyer = exports.signUpBuyer = void 0;
+exports.resetPassword = exports.requestPasswordReset = exports.updateBuyerPassword = exports.deleteImage = exports.getImage = exports.uploadImage = exports.deleteBuyerAccount = exports.getBuyerAccount = exports.updateBuyerAccount = exports.loginBuyer = exports.signUpBuyer = void 0;
 const express_validator_1 = require("express-validator");
 const buyerAuth_1 = require("../auth/buyerAuth");
 const addressFunctions_1 = require("../functions/addressFunctions");
 const buyerFunctions_1 = require("../functions/buyerFunctions");
 const image_config_1 = require("../util/image.config");
 const mail_1 = require("../util/mail");
+const resetPasswordAuth_1 = require("../auth/resetPasswordAuth");
 async function signUpBuyer(req, res) {
     const errors = (0, express_validator_1.validationResult)(req);
     try {
@@ -348,7 +349,7 @@ async function updateBuyerPassword(req, res) {
 }
 exports.updateBuyerPassword = updateBuyerPassword;
 ;
-async function forgotBuyerPassword(req, res) {
+async function requestPasswordReset(req, res) {
     try {
         if (!req.body.email) {
             res.status(400).json({
@@ -358,10 +359,16 @@ async function forgotBuyerPassword(req, res) {
             return;
         }
         ;
+        const buyerDetails = await (0, buyerFunctions_1.getBuyerByEmail)(req.body.email);
+        if (!buyerDetails) {
+            res.status(400).send({ success: false, message: "Please enter a registered email" });
+            return;
+        }
+        ;
         await (0, mail_1.mail)(req.body.email);
         res.status(200).send({
             success: true,
-            message: "A reset token has been sent to your registered email"
+            message: "A reset password instruction has been sent to your registered email"
         });
     }
     catch (error) {
@@ -373,20 +380,31 @@ async function forgotBuyerPassword(req, res) {
     }
     ;
 }
-exports.forgotBuyerPassword = forgotBuyerPassword;
+exports.requestPasswordReset = requestPasswordReset;
 ;
-async function changeForgotPassword(req, res) {
+async function resetPassword(req, res) {
     try {
-        if (!req.body.new_password) {
+        if (!req.body.new_password || !req.body.reset_token) {
             res.status(400).json({
                 success: false,
-                message: "Please enter a new password"
+                message: "Please enter a new password and token"
             });
             return;
         }
         ;
+        const email = await (0, resetPasswordAuth_1.verifyForgotPasswordToken)(req.body.reset_token);
+        // if(!email) {
+        //     res.status(400).json({
+        //         success: false,
+        //         message: "Invalid or expired reset password token"
+        //     })
+        // }
         const new_hashed_password = await (0, buyerFunctions_1.hashBuyerPassword)(req.body.new_password);
-        await (0, buyerFunctions_1.updatePassword)(req.buyer.id, new_hashed_password);
+        await (0, buyerFunctions_1.updateBuyerPasswordByEmail)(email, new_hashed_password);
+        res.status(200).send({
+            success: true,
+            message: "You have successfully reset your password"
+        });
     }
     catch (error) {
         return res.status(500).json({
@@ -396,4 +414,4 @@ async function changeForgotPassword(req, res) {
         });
     }
 }
-exports.changeForgotPassword = changeForgotPassword;
+exports.resetPassword = resetPassword;

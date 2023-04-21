@@ -21,36 +21,36 @@ export function generateForgotPasswordToken(payload: string | object | Buffer): 
     });
 };
   
-export async function verifyForgotPasswordToken(
-req: Request,
-res: Response,
-next: NextFunction
-) {
-    const authHeader = req.headers["authorization"];
-    const token = authHeader && authHeader.split(" ")[1];
-    if (!token) {
-        return res.status(401).send({
-        error: "You are unauthorized to perform this operation.",
-        });
-    }
+// export async function verifyForgotPasswordToken(
+// req: Request,
+// res: Response,
+// next: NextFunction
+// ) {
+//     const authHeader = req.headers["authorization"];
+//     const token = authHeader && authHeader.split(" ")[1];
+//     if (!token) {
+//         return res.status(401).send({
+//         error: "You are unauthorized to perform this operation.",
+//         });
+//     }
 
-    try {
-        const decodedToken: any = jwt.verify(token, forgotPasswordKey);
-        // return decodedToken.email;
-        next();
-    } catch (error: any) {
-        return res.status(403).send({
-        error: error.message,
-        });
-    }
-}
+//     try {
+//         const decodedToken: any = jwt.verify(token, forgotPasswordKey);
+//         // return decodedToken.email;
+//         next();
+//     } catch (error: any) {
+//         return res.status(403).send({
+//         error: error.message,
+//         });
+//     }
+// }
   
-export async function verifyForgotPasswordToken2 (token: string): Promise<string> {
+export async function verifyForgotPasswordToken (token: string): Promise<string> {
   try {
     const decodedToken: any = jwt.verify(token, forgotPasswordKey);
-    console.log(decodedToken)
     return decodedToken.email;
   } catch (error: any) {
-    throw new Error(`Error verifying forgot password token: ${error.message}`)
+    throw new Error("Invalid or expired reset password token")
+    // throw new Error(`Error verifying forgot password token: ${error.message}`)
   }
 }
