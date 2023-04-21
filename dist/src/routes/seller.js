@@ -16,9 +16,9 @@ router.post('/login', (0, express_validator_1.body)('email').isEmail(), seller_1
 router.put('/update_account', sellerAuth_1.verifySellerToken, seller_1.updateSellerAccount);
 router.get('/get_account', sellerAuth_1.verifySellerToken, seller_1.getSellerAccount);
 router.delete('/delete_account', sellerAuth_1.verifySellerToken, seller_1.deleteAccount);
-router.put('/update_password', sellerAuth_1.verifySellerToken, seller_1.updateSellerPassword);
 router.post('/upload_image', sellerAuth_1.verifySellerToken, image_config_1.upload.single('image'), seller_1.uploadImage);
 router.get('/get_image/:filename', seller_1.getImage);
 router.delete('/delete_image', sellerAuth_1.verifySellerToken, seller_1.deleteImage);
-router.post('/reset_password', sellerAuth_1.verifySellerToken, seller_1.resetSellerPassword);
+router.put('/update_password', sellerAuth_1.verifySellerToken, seller_1.updateSellerPassword);
+router.post('/reset_password', seller_1.forgotSellerPassword);
 exports.default = router;

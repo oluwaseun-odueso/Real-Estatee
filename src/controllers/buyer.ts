@@ -169,38 +169,6 @@ export async function updateBuyerAccount(req: Request, res: Response) {
     };
 };
 
-export async function updateBuyerPassword (req: Request, res: Response) {
-    try {
-        if (!req.body.current_password || !req.body.new_password) {
-            res.status(400).json({ 
-                success: false, 
-                message: "Please enter your current password and a new password"
-            });
-            return;
-        };
-        
-        const {current_password, new_password} = req.body;
-        const collectedBuyerPassword = await retrieveBuyerHashedPassword(req.buyer.email)
-        if (await confirmBuyerRetrievedPassword(current_password, collectedBuyerPassword) !== true) {
-            res.status(400).send({ success: false, message: "Current password is incorrect"})
-            return;
-        };
-
-        const new_hashed_password = await hashBuyerPassword(new_password);
-        await updatePassword(req.buyer.id, new_hashed_password)
-        res.status(200).send({
-            success: true,
-            message: 'Your password has been updated!', 
-        });
-    } catch (error: any) {
-        return res.status(500).json({
-            success: false,
-            message: 'Error updating password',
-            error: error.message
-        });
-    };
-};
-
 export async function getBuyerAccount (req: Request, res: Response) {
     try {
         const buyer = await getFullBuyerDetails(req.buyer.id, req.buyer.address_id);
@@ -242,23 +210,6 @@ export async function deleteBuyerAccount (req: Request, res: Response) {
         return res.status(500).json({
             success: false,
             message: 'Could not delete your account',
-            error: error.message
-        });
-    };
-};
-
-export async function resetBuyerPassword (req: Request, res: Response) {
-    try {
-        const buyer = await getBuyerById(req.buyer.id)
-        await mail(buyer.email)
-        res.status(200).send({
-            success: true,
-            message: "A reset token has been sent to your registered email"
-        });
-    } catch (error: any) {
-        return res.status(500).json({
-            success: false,
-            message: 'Could not process reset password',
             error: error.message
         });
     };
@@ -357,3 +308,60 @@ export async function deleteImage (req: Request, res: Response) {
         });    
     };
 };
+
+export async function updateBuyerPassword (req: Request, res: Response) {
+    try {
+        if (!req.body.current_password || !req.body.new_password) {
+            res.status(400).json({ 
+                success: false, 
+                message: "Please enter your current password and a new password"
+            });
+            return;
+        };
+        
+        const {current_password, new_password} = req.body;
+        const collectedBuyerPassword = await retrieveBuyerHashedPassword(req.buyer.email)
+        if (await confirmBuyerRetrievedPassword(current_password, collectedBuyerPassword) !== true) {
+            res.status(400).send({ success: false, message: "Current password is incorrect"})
+            return;
+        };
+
+        const new_hashed_password = await hashBuyerPassword(new_password);
+        await updatePassword(req.buyer.id, new_hashed_password)
+        res.status(200).send({
+            success: true,
+            message: 'Your password has been updated!', 
+        });
+    } catch (error: any) {
+        return res.status(500).json({
+            success: false,
+            message: 'Error updating password',
+            error: error.message
+        });
+    };
+};
+
+export async function forgotBuyerPassword (req: Request, res: Response) {
+    try {
+        if (!req.body.email) {
+            res.status(400).json({ 
+                success: false, 
+                message: "Please enter your email"
+            });
+            return;
+        };
+        
+        await mail(req.body.email)
+        res.status(200).send({
+            success: true,
+            message: "A reset token has been sent to your registered email"
+        });
+    } catch (error: any) {
+        return res.status(500).json({
+            success: false,
+            message: 'Unable to process forgot password',
+            error: error.message
+        });
+    };
+};
+

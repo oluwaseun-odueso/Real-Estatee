@@ -242,10 +242,16 @@ export async function updateSellerPassword (req: Request, res: Response) {
     };
 };
 
-export async function resetSellerPassword (req: Request, res: Response) {
+export async function forgotSellerPassword (req: Request, res: Response) {
     try {
-        const buyer = await getSellerById(req.seller.id)
-        await mail(buyer.email)
+        if (!req.body.email) {
+            res.status(400).json({ 
+                success: false, 
+                message: "Please enter your email"
+            });
+            return;
+        };
+        await mail(req.body.email)
         res.status(200).send({
             success: true,
             message: "A reset token has been sent to your registered email"

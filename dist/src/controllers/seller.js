@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteImage = exports.getImage = exports.uploadImage = exports.resetSellerPassword = exports.updateSellerPassword = exports.deleteAccount = exports.getSellerAccount = exports.updateSellerAccount = exports.loginSeller = exports.signUpSeller = void 0;
+exports.deleteImage = exports.getImage = exports.uploadImage = exports.forgotSellerPassword = exports.updateSellerPassword = exports.deleteAccount = exports.getSellerAccount = exports.updateSellerAccount = exports.loginSeller = exports.signUpSeller = void 0;
 const express_validator_1 = require("express-validator");
 const sellerAuth_1 = require("../auth/sellerAuth");
 const addressFunctions_1 = require("../functions/addressFunctions");
@@ -242,10 +242,17 @@ async function updateSellerPassword(req, res) {
 }
 exports.updateSellerPassword = updateSellerPassword;
 ;
-async function resetSellerPassword(req, res) {
+async function forgotSellerPassword(req, res) {
     try {
-        const buyer = await (0, sellerFunctions_1.getSellerById)(req.seller.id);
-        await (0, mail_1.mail)(buyer.email);
+        if (!req.body.email) {
+            res.status(400).json({
+                success: false,
+                message: "Please enter your email"
+            });
+            return;
+        }
+        ;
+        await (0, mail_1.mail)(req.body.email);
         res.status(200).send({
             success: true,
             message: "A reset token has been sent to your registered email"
@@ -260,7 +267,7 @@ async function resetSellerPassword(req, res) {
     }
     ;
 }
-exports.resetSellerPassword = resetSellerPassword;
+exports.forgotSellerPassword = forgotSellerPassword;
 ;
 async function uploadImage(req, res) {
     const file = req.file;

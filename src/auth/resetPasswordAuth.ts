@@ -36,10 +36,11 @@ next: NextFunction
 
     try {
         const decodedToken: any = jwt.verify(token, forgotPasswordKey);
-        return decodedToken.email;
-    } catch (error) {
+        // return decodedToken.email;
+        next();
+    } catch (error: any) {
         return res.status(403).send({
-        error: "Session expired! please login to perform operation.",
+        error: error.message,
         });
     }
 }

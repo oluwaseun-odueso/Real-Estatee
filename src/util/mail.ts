@@ -22,7 +22,14 @@ export async function mail(recipient: string) {
     from: sender,
     to: recipient,
     subject: "Reset password - Real Estatery",
-    text: "Reset your password with the token below: " + token,
+    // text: "Reset your password with the token below: " + token,
+    html: `<div>
+    <p>Dear User, click the button below to reset your password</p>
+    <a
+      href="https://real-estate-collab.vercel.app/auth/reset-password?token=${token}"
+      >Reset Password</a
+    >
+  </div>`
   };
 
   transporter.sendMail(options, function (err, info) {

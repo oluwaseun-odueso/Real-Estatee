@@ -4,16 +4,17 @@ import { verifyBuyerToken } from '../auth/buyerAuth';
 import { 
     deleteBuyerAccount,
     deleteImage,
+    forgotBuyerPassword,
     getBuyerAccount,
     getImage,
     loginBuyer,
-    resetBuyerPassword,
     signUpBuyer, 
     updateBuyerAccount,
     updateBuyerPassword,
     uploadImage
 } from '../controllers/buyer';
 import { upload } from '../util/image.config';
+import { verifyForgotPasswordToken } from '../auth/resetPasswordAuth';
 const router = express.Router();
 
 router.post(
@@ -31,6 +32,6 @@ router.put('/update_password', verifyBuyerToken, updateBuyerPassword);
 router.post('/upload_image', verifyBuyerToken, upload.single('image'), uploadImage);
 router.get('/get_image/:filename', getImage);
 router.delete('/delete_image', verifyBuyerToken, deleteImage)
-router.post('/reset_password', verifyBuyerToken, resetBuyerPassword);
+router.post('/forgot_password', forgotBuyerPassword);
 
 export default router;

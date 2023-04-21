@@ -5,10 +5,10 @@ import { verifySellerToken } from '../auth/sellerAuth';
 import { 
     deleteAccount,
     deleteImage,
+    forgotSellerPassword,
     getImage,
     getSellerAccount,
     loginSeller, 
-    resetSellerPassword, 
     signUpSeller, 
     updateSellerAccount,
     updateSellerPassword,
@@ -29,10 +29,10 @@ router.post('/login', body('email').isEmail(), loginSeller);
 router.put('/update_account', verifySellerToken, updateSellerAccount);
 router.get('/get_account', verifySellerToken, getSellerAccount);
 router.delete('/delete_account', verifySellerToken, deleteAccount);
-router.put('/update_password', verifySellerToken, updateSellerPassword);
 router.post('/upload_image', verifySellerToken, upload.single('image'), uploadImage)
 router.get('/get_image/:filename', getImage)
 router.delete('/delete_image', verifySellerToken, deleteImage)
-router.post('/reset_password', verifySellerToken, resetSellerPassword)
+router.put('/update_password', verifySellerToken, updateSellerPassword);
+router.post('/reset_password', forgotSellerPassword)
 
 export default router;
