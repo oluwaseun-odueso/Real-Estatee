@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resetPassword = exports.requestPasswordReset = exports.updateBuyerPassword = exports.deleteImage = exports.getImage = exports.uploadImage = exports.deleteBuyerAccount = exports.getBuyerAccount = exports.updateBuyerAccount = exports.loginBuyer = exports.signUpBuyer = void 0;
+exports.resetPassword = exports.requestBuyerPasswordReset = exports.updateBuyerPassword = exports.deleteImage = exports.getImage = exports.uploadImage = exports.deleteBuyerAccount = exports.getBuyerAccount = exports.updateBuyerAccount = exports.loginBuyer = exports.signUpBuyer = void 0;
 const express_validator_1 = require("express-validator");
 const buyerAuth_1 = require("../auth/buyerAuth");
 const addressFunctions_1 = require("../functions/addressFunctions");
@@ -349,7 +349,7 @@ async function updateBuyerPassword(req, res) {
 }
 exports.updateBuyerPassword = updateBuyerPassword;
 ;
-async function requestPasswordReset(req, res) {
+async function requestBuyerPasswordReset(req, res) {
     try {
         if (!req.body.email) {
             res.status(400).json({
@@ -359,8 +359,8 @@ async function requestPasswordReset(req, res) {
             return;
         }
         ;
-        const buyerDetails = await (0, buyerFunctions_1.getBuyerByEmail)(req.body.email);
-        if (!buyerDetails) {
+        const buyer = await (0, buyerFunctions_1.getBuyerByEmail)(req.body.email);
+        if (!buyer) {
             res.status(400).send({ success: false, message: "Please enter a registered email" });
             return;
         }
@@ -380,7 +380,7 @@ async function requestPasswordReset(req, res) {
     }
     ;
 }
-exports.requestPasswordReset = requestPasswordReset;
+exports.requestBuyerPasswordReset = requestBuyerPasswordReset;
 ;
 async function resetPassword(req, res) {
     try {

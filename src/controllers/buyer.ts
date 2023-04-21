@@ -343,7 +343,7 @@ export async function updateBuyerPassword (req: Request, res: Response) {
     };
 };
 
-export async function requestPasswordReset (req: Request, res: Response) {
+export async function requestBuyerPasswordReset (req: Request, res: Response) {
     try {
         if (!req.body.email) {
             res.status(400).json({ 
@@ -352,8 +352,8 @@ export async function requestPasswordReset (req: Request, res: Response) {
             });
             return;
         };
-        const buyerDetails = await getBuyerByEmail(req.body.email);
-        if (!buyerDetails) {
+        const buyer = await getBuyerByEmail(req.body.email);
+        if (!buyer) {
             res.status(400).send({ success: false, message: "Please enter a registered email"})
             return;
         };

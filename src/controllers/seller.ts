@@ -26,6 +26,7 @@ import {
 import { mail } from '../util/mail';
 import { s3 } from "../util/image.config"
 import dotenv from 'dotenv';
+import { verifyForgotPasswordToken } from '../auth/resetPasswordAuth';
 
 dotenv.config();
 
@@ -242,29 +243,6 @@ export async function updateSellerPassword (req: Request, res: Response) {
     };
 };
 
-export async function forgotSellerPassword (req: Request, res: Response) {
-    try {
-        if (!req.body.email) {
-            res.status(400).json({ 
-                success: false, 
-                message: "Please enter your email"
-            });
-            return;
-        };
-        await mail(req.body.email)
-        res.status(200).send({
-            success: true,
-            message: "A reset token has been sent to your registered email"
-        });
-    } catch (error: any) {
-        return res.status(500).json({
-            success: false,
-            message: 'Could not process reset password',
-            error: error.message
-        });
-    };
-};
-
 export async function uploadImage (req: Request, res: Response) {
     const file: any = req.file;
     if (!file) {
@@ -359,3 +337,32 @@ export async function deleteImage (req: Request, res: Response) {
         });    
     };
 };
+
+export async function requestSellerPasswordReset (req: Request, res: Response) {
+    try {
+        if (!req.body.email) {
+            res.status(400).json({ 
+                success: false, 
+                message: "Please enter your email"
+            });
+            return;
+        };
+        const seller = await getSellerByEmail(req.body.email);
+        if (!seller) {
+            res.status(400).send({ success: false, message: "Please enter a registered email"})
+            return;
+        };
+        await mail(req.body.email)
+        res.status(200).send({
+            success: true,
+            message: "A reset token has been sent to your registered email"
+        });
+    } catch (error: any) {
+        return res.status(500).json({
+            success: false,
+            message: 'Unable to process forgot password',
+            error: error.message
+        });
+    };
+};
+

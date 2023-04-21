@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteImage = exports.getImage = exports.uploadImage = exports.forgotSellerPassword = exports.updateSellerPassword = exports.deleteAccount = exports.getSellerAccount = exports.updateSellerAccount = exports.loginSeller = exports.signUpSeller = void 0;
+exports.requestSellerPasswordReset = exports.deleteImage = exports.getImage = exports.uploadImage = exports.updateSellerPassword = exports.deleteAccount = exports.getSellerAccount = exports.updateSellerAccount = exports.loginSeller = exports.signUpSeller = void 0;
 const express_validator_1 = require("express-validator");
 const sellerAuth_1 = require("../auth/sellerAuth");
 const addressFunctions_1 = require("../functions/addressFunctions");
@@ -242,33 +242,6 @@ async function updateSellerPassword(req, res) {
 }
 exports.updateSellerPassword = updateSellerPassword;
 ;
-async function forgotSellerPassword(req, res) {
-    try {
-        if (!req.body.email) {
-            res.status(400).json({
-                success: false,
-                message: "Please enter your email"
-            });
-            return;
-        }
-        ;
-        await (0, mail_1.mail)(req.body.email);
-        res.status(200).send({
-            success: true,
-            message: "A reset token has been sent to your registered email"
-        });
-    }
-    catch (error) {
-        return res.status(500).json({
-            success: false,
-            message: 'Could not process reset password',
-            error: error.message
-        });
-    }
-    ;
-}
-exports.forgotSellerPassword = forgotSellerPassword;
-;
 async function uploadImage(req, res) {
     const file = req.file;
     if (!file) {
@@ -367,4 +340,37 @@ async function deleteImage(req, res) {
     ;
 }
 exports.deleteImage = deleteImage;
+;
+async function requestSellerPasswordReset(req, res) {
+    try {
+        if (!req.body.email) {
+            res.status(400).json({
+                success: false,
+                message: "Please enter your email"
+            });
+            return;
+        }
+        ;
+        const seller = await (0, sellerFunctions_1.getSellerByEmail)(req.body.email);
+        if (!seller) {
+            res.status(400).send({ success: false, message: "Please enter a registered email" });
+            return;
+        }
+        ;
+        await (0, mail_1.mail)(req.body.email);
+        res.status(200).send({
+            success: true,
+            message: "A reset token has been sent to your registered email"
+        });
+    }
+    catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Unable to process forgot password',
+            error: error.message
+        });
+    }
+    ;
+}
+exports.requestSellerPasswordReset = requestSellerPasswordReset;
 ;
