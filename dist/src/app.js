@@ -8,6 +8,8 @@ const seller_1 = __importDefault(require("./routes/seller"));
 const property_1 = __importDefault(require("./routes/property"));
 const buyer_1 = __importDefault(require("./routes/buyer"));
 const transaction_1 = __importDefault(require("./routes/transaction"));
+const passport_1 = __importDefault(require("passport"));
+require('./util/passportConfig');
 const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
@@ -26,6 +28,10 @@ app.get("/", (req, res) => {
     res
         .status(200)
         .send({ success: true, message: " Official Real Estate Page" });
+});
+app.get('/auth/google', passport_1.default.authenticate('google', { scope: ['profile', 'email'] }));
+app.get('/auth/google/callback', passport_1.default.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
+    res.redirect('/success');
 });
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 module.exports = app;

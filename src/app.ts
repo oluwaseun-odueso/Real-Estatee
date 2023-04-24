@@ -3,6 +3,8 @@ import sellerRoutes from './routes/seller';
 import propertyRoutes from './routes/property';
 import buyerRoutes from './routes/buyer';
 import transactionRoutes from './routes/transaction';
+import passport from 'passport'; 
+require('./util/passportConfig')
 import cors from 'cors'; 
 import dotenv from 'dotenv';
 
@@ -29,6 +31,12 @@ app.get("/", (req: Request, res: Response) => {
     .status(200)
     .send({ success: true, message: " Official Real Estate Page" });
 });
+
+app.get('/auth/google', passport.authenticate('google', {scope: ['profile', 'email']}))
+
+app.get('/auth/google/callback', passport.authenticate('google', {failureRedirect: '/login'}), (req, res) => {
+  res.redirect('/success')
+})
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
