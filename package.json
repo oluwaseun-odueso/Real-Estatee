@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "start": "node ./dist/src/app.js"
+    "start": "node ./dist/src/app.js",
+    "dev": "nodemon ./dist/src/app.js"
   },
   "author": "Oluwaseun Odueso",
   "license": "ISC",
@@ -24,6 +25,8 @@
     "@types/multer": "^1.4.7",
     "@types/multer-s3": "^3.0.0",
     "@types/nodemailer": "^6.4.7",
+    "@types/passport": "^1.0.12",
+    "@types/passport-google-oauth2": "^0.1.5",
     "@types/paystack": "^2.0.1",
     "aws-sdk": "^2.1321.0",
     "aws-sdk-js-codemod": "^0.13.0",
@@ -40,6 +43,8 @@
     "multer-s3": "^3.0.1",
     "mysql2": "^3.1.2",
     "nodemailer": "^6.9.1",
+    "passport": "^0.6.0",
+    "passport-google-oauth2": "^0.2.0",
     "paystack": "^2.0.1",
     "pg": "^8.10.0",
     "pg-hstore": "^2.3.4",

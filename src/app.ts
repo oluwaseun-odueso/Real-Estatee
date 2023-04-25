@@ -13,10 +13,7 @@ const app: Application = express();
 
 app.use(express.json());
 app.use(
-  cors({
-    origin: ["http://localhost:3000", "https://real-estate-collab.vercel.app/"],
-    methods: ["GET", "POST", "DELETE", "UPDATE", "PUT", "PATCH", "OPTIONS"],
-  })
+  cors()
 );
 
 app.use('/seller', sellerRoutes);
