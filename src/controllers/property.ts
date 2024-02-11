@@ -211,7 +211,7 @@ export async function deleteImages (req: Request, res: Response) {
             }
         };
         
-        s3.deleteObjects(deleteParams, (error, data) => {
+        s3.deleteObjects(deleteParams, (error: any, data: any) => {
             if (error) {
               res.status(500).json({ message: 'Error deleting images', error});
             } else {

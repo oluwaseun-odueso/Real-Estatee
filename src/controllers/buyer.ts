@@ -134,7 +134,7 @@ export async function updateBuyerAccount(req: Request, res: Response) {
             });
             return;
         };
-2
+
         const {first_name, last_name, email, phone_number, street, city, state, country, postal_code} = req.body;
         const buyer = await getBuyerById(req.buyer.id)
         if ( await checkBuyerEmail (email) && ! checkIfEntriesMatch(buyer.email, email)) {

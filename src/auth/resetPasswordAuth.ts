@@ -13,10 +13,14 @@ if (!forgotPasswordKey) {
 
 export function generateForgotPasswordToken(payload: string | object | Buffer): Promise<string> {
     return new Promise((resolve, reject) => {
-      jwt.sign(payload, forgotPasswordKey, { expiresIn: "15m" }, (error, token) => {
+      jwt.sign(payload, forgotPasswordKey, { expiresIn: "15m" }, (error: any, token?: string) => {
         if (error) {
           reject(error);
-        } else resolve(token as string);
+        } else if (token) {
+          resolve(token);
+        } else {
+          reject(new Error('Token is undefined'));
+        }
       });
     });
 };
@@ -27,6 +31,5 @@ export async function verifyForgotPasswordToken (token: string): Promise<string>
     return decodedToken.email;
   } catch (error: any) {
     throw new Error(`Invalid or expired reset password token: ${error.message}`)
-    // throw new Error(`Error verifying forgot password token: ${error.message}`)
   }
 }
